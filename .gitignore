@@ -1,0 +1,42 @@
+# Dependencias
+node_modules/
+.pnp
+.pnp.js
+
+# Builds
+dist/
+build/
+coverage/
+web/dist/
+web/.vite/
+
+# Expo
+.expo/
+.expo-shared/
+mobile/.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+mobile/web-build/
+
+# Entorno
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# SO / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# TS
+*.tsbuildinfo
