@@ -48,10 +48,15 @@ npx vite --host
 ```bash
 cd mobile
 npm install
-npx expo start
+npx expo start --lan
 ```
 
-Escanea el QR con Expo Go. La API apunta a `http://192.168.0.9:4000/api` por defecto (ajustar en `mobile/src/services/api.ts`).
+Escanea el QR con Expo Go (proyecto en SDK 54). La API apunta a `http://192.168.0.7:4000/api` por defecto — si tu IP local cambia, edítala en `mobile/src/services/api.ts` y `mobile/src/services/socket.ts`, y reinicia con:
+
+```bash
+set REACT_NATIVE_PACKAGER_HOSTNAME=192.168.0.7
+npx expo start --lan
+```
 
 ## Cuentas de ejemplo
 

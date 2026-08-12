@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
-import { ResizeMode, Video } from 'expo-av'
+import { useVideoPlayer, VideoView } from 'expo-video'
 import type { Event } from '../../../shared/src/types/event'
 import StateHandler from '../components/StateHandler'
 import { useAuth } from '../context/AuthContext'
@@ -18,6 +18,10 @@ export default function WatchScreen({ route }: any) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [viewers, setViewers] = useState(0)
   const [input, setInput] = useState('')
+
+  const player = useVideoPlayer(null, (p) => {
+    p.loop = false
+  })
 
   const load = async () => {
     setLoading(true)
@@ -48,11 +52,16 @@ export default function WatchScreen({ route }: any) {
     return () => disconnectSocket()
   }, [id])
 
+  useEffect(() => {
+    if (event?.liveUrl) {
+      player.replace({ uri: event.liveUrl })
+      player.play()
+    }
+  }, [event?.liveUrl])
+
   if (loading || error || !event) {
     return <StateHandler loading={loading} error={error} onRetry={load} />
   }
-
-  const liveUrl = event.liveUrl ?? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
 
   const submit = () => {
     if (!input.trim()) return
@@ -62,13 +71,7 @@ export default function WatchScreen({ route }: any) {
 
   return (
     <View style={styles.container}>
-      <Video
-        source={{ uri: liveUrl }}
-        style={styles.video}
-        useNativeControls
-        resizeMode={ResizeMode.CONTAIN}
-        shouldPlay
-      />
+      <VideoView player={player} style={styles.video} nativeControls allowsPictureInPicture />
 
       <View style={styles.header}>
         <Text style={styles.title} numberOfLines={1}>{event.title}</Text>

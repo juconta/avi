@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ResizeMode, Video } from 'expo-av'
+import { useVideoPlayer, VideoView } from 'expo-video'
 import type { VodAsset } from '../../../shared/src/types/vod'
 import StateHandler from '../components/StateHandler'
 import { vodService } from '../services/data.service'
@@ -29,6 +29,17 @@ export default function VodDetailScreen({ route }: any) {
     void load()
   }, [id])
 
+  const player = useVideoPlayer(null, (p) => {
+    p.loop = false
+  })
+
+  useEffect(() => {
+    if (vod?.videoUrl) {
+      player.replace({ uri: vod.videoUrl })
+      player.play()
+    }
+  }, [vod?.videoUrl])
+
   if (loading || error || !vod) {
     return <StateHandler loading={loading} error={error} onRetry={load} />
   }
@@ -46,12 +57,11 @@ export default function VodDetailScreen({ route }: any) {
         <Text style={styles.description}>{vod.description}</Text>
 
         {isFree && (
-          <Video
-            source={{ uri: vod.videoUrl }}
+          <VideoView
+            player={player}
             style={styles.player}
-            useNativeControls
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay
+            nativeControls
+            allowsPictureInPicture
           />
         )}
       </View>

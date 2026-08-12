@@ -1,4 +1,4 @@
-export const API_URL = 'http://192.168.0.9:4000/api'
+export const API_URL = 'http://192.168.0.7:4000/api'
 
 export type { Event } from './types/event'
 export type { Payment } from './types/payment'
