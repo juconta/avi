@@ -8,9 +8,11 @@ const DEMO_STREAMS = [
   'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
   'https://test-streams.mux.dev/pts_shift/master.m3u8',
   'https://test-streams.mux.dev/tos_ismc/main.m3u8',
-  'https://test-streams.mux.dev/bbb/bbb.m3u8',
-  'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8',
+  'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+  'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8',
   'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
+  'https://mtoczko.github.io/hls-test-streams/test-gap/playlist.m3u8',
+  'https://playertest.longtailvideo.com/adaptive/bipbop/gear1/prog_index.m3u8',
 ]
 
 const cameraTypesWithGoals: string[] = ['futbol', 'fútbol', 'hockey', 'handball', 'futsal', 'handbol']
