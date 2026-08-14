@@ -11,6 +11,12 @@ export default function EventDetail() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
+  const categoryLabel: Record<string, string> = {
+    sport: 'Deporte',
+    racing: 'Automovilismo',
+    show: 'Espectáculo',
+  }
+
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -75,6 +81,11 @@ export default function EventDetail() {
       </div>
 
       <div className="detail-actions">
+        <div className="detail-tags">
+          <span className="detail-tag">{categoryLabel[event.category] ?? event.category}</span>
+          {event.sport && <span className="detail-tag">{event.sport}</span>}
+          {event.venue.cameras.length > 0 && <span className="detail-tag">{event.venue.cameras.length} cámaras</span>}
+        </div>
         {ended ? (
           <>
             {canWatch ? (

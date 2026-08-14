@@ -1,6 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { UserRole } from '../common/decorators/roles.decorator'
 import { CrudRepository } from './repositories/tokens'
+import { EventCategory, EventStatus } from './entities/event.entity'
+import { buildVenue } from '../events/venue.factory'
 
 export class InMemoryRepository<T extends { id: string }> implements CrudRepository<T> {
   private readonly store = new Map<string, T>()
@@ -84,29 +86,72 @@ export class InMemoryStorage implements OnModuleInit {
 
     this.events.create({
       id: 'evt-1',
-      title: 'Concierto en vivo de prueba',
-      description: 'Un concierto para probar el streaming PPV.',
-      price: 9.99,
+      title: 'Final del Campeonato de Fútbol',
+      description:
+        'La gran final del torneo. Transmisión multi-cámara: 4 lados del estadio (superior e inferior), cámaras detrás de cada arco y cámara en el oído del árbitro.',
+      price: 12.99,
       coverImage: 'https://picsum.photos/seed/avi1/1280/720',
       streamerId: 'admin-1',
-      status: 'scheduled',
+      status: EventStatus.LIVE,
       scheduledAt: later,
+      startedAt: now,
       durationMinutes: 120,
+      category: EventCategory.SPORT,
+      sport: 'Fútbol',
+      venue: buildVenue(EventCategory.SPORT, 'Fútbol'),
+      liveUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       createdAt: now,
     })
 
     this.events.create({
       id: 'evt-2',
+      title: 'Gran Premio de F1',
+      description:
+        'Carrera de automovilismo con cámaras estratégicas en la pista, en cada vehículo y en el casco de los pilotos.',
+      price: 19.99,
+      coverImage: 'https://picsum.photos/seed/avif1/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 180,
+      category: EventCategory.RACING,
+      sport: 'F1',
+      venue: buildVenue(EventCategory.RACING, 'F1'),
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-3',
+      title: 'Concierto en vivo de prueba',
+      description:
+        'Un concierto para probar el streaming PPV con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
+      price: 9.99,
+      coverImage: 'https://picsum.photos/seed/avishow/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 120,
+      category: EventCategory.SHOW,
+      sport: 'Concierto',
+      venue: buildVenue(EventCategory.SHOW, 'Concierto'),
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-4',
       title: 'Evento finalizado',
-      description: 'Un evento que ya terminó, disponible para ver el resumen.',
+      description: 'Un evento que ya terminó, disponible para ver el relato en cámara principal.',
       price: 4.99,
       coverImage: 'https://picsum.photos/seed/avi2/1280/720',
       streamerId: 'admin-1',
-      status: 'ended',
+      status: EventStatus.ENDED,
       scheduledAt: yesterday,
       startedAt: yesterday,
       endedAt: new Date(yesterday.getTime() + 2 * 60 * 60 * 1000),
       durationMinutes: 120,
+      category: EventCategory.SPORT,
+      sport: 'Básquet',
+      venue: buildVenue(EventCategory.SPORT, 'Básquet'),
       liveUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       createdAt: yesterday,
     })

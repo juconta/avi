@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing'
-import { Event, EventStatus } from '../storage/entities/event.entity'
+import { Event, EventCategory, EventStatus, VenueKind } from '../storage/entities/event.entity'
 import { EVENT_REPO } from '../storage/repositories/tokens'
 import { EventsService } from './events.service'
 import { MockRepo } from '../test/mock-repo'
@@ -21,6 +21,9 @@ describe('EventsService', () => {
       status,
       scheduledAt,
       durationMinutes: 60,
+      category: EventCategory.SPORT,
+      sport: 'Fútbol',
+      venue: { kind: VenueKind.STADIUM, name: 'Estadio', cameras: [] },
       createdAt: now,
     }
   }
@@ -87,6 +90,8 @@ describe('EventsService', () => {
 
       expect(created.status).toBe(EventStatus.SCHEDULED)
       expect(created.streamerId).toBe('s1')
+      expect(created.category).toBe(EventCategory.SPORT)
+      expect(created.venue.cameras.length).toBeGreaterThan(0)
       expect(repo.items).toHaveLength(4)
     })
   })

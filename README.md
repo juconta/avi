@@ -65,6 +65,16 @@ npx expo start --lan
 | Admin  | `admin@avi.test`| `admin123` |
 | Usuario| `user@avi.test` | `password123` |
 
+## Streaming multi-cámara
+
+Cada evento pertenece a una categoría y tiene cámaras posicionadas según su venue:
+
+- **Deporte** (estadio): cámaras en los 4 lados (nivel superior e inferior), cámara detrás de cada arco (fútbol, hockey, etc.) o sobre cada aro (básquet), y cámara en el oído de los árbitros.
+- **Automovilismo** (F1, F2, F3, MotoGP): cámaras estratégicas en la pista, cámara en cada vehículo y en el casco de cada piloto.
+- **Espectáculo** (conciertos, obras): cámaras en los 4 lados de la sala y sobre el escenario.
+
+En la pantalla de reproducción, el botón **Cámaras** abre un croquis del venue; el usuario toca de 1 a 4 cámaras y las ve simultáneamente en el grid.
+
 ## Tests
 
 ```bash

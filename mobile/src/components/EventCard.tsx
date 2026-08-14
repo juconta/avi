@@ -3,6 +3,12 @@ import type { Event } from '../../../shared/src/types/event'
 import { colors, radius, spacing } from '../theme/colors'
 import { formatDateTime, formatCurrency } from '../utils/format'
 
+const categoryLabel: Record<string, string> = {
+  sport: 'Deporte',
+  racing: 'Automovilismo',
+  show: 'Espectáculo',
+}
+
 interface Props {
   event: Event
   onPress: (event: Event) => void
@@ -19,6 +25,9 @@ export default function EventCard({ event, onPress }: Props) {
           <Text style={styles.badgeText}>EN VIVO</Text>
         </View>
       )}
+      <View style={styles.badgeCategory}>
+        <Text style={styles.badgeText}>{categoryLabel[event.category] ?? event.category}</Text>
+      </View>
       <View style={styles.body}>
         <Text style={styles.title} numberOfLines={1}>
           {event.title}
@@ -52,6 +61,17 @@ const styles = StyleSheet.create({
     top: spacing.sm,
     left: spacing.sm,
     backgroundColor: colors.danger,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+  },
+  badgeCategory: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: 'rgba(15,17,21,0.8)',
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: spacing.sm,
     paddingVertical: 2,
     borderRadius: radius.sm,

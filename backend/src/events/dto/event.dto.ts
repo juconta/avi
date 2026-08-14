@@ -1,5 +1,38 @@
-import { IsDateString, IsNumber, IsOptional, IsString, Min } from 'class-validator'
-import { EventStatus } from '../../storage/entities/event.entity'
+import { IsDateString, IsEnum, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+import { EventCategory, EventStatus } from '../../storage/entities/event.entity'
+
+class CameraPositionDto {
+  @IsString()
+  id: string
+
+  @IsString()
+  label: string
+
+  @IsString()
+  description: string
+
+  @IsString()
+  type: string
+
+  @IsObject()
+  position: { x: number; y: number }
+
+  @IsString()
+  liveUrl: string
+}
+
+class VenueDto {
+  @IsString()
+  kind: string
+
+  @IsString()
+  name: string
+
+  @ValidateNested({ each: true })
+  @Type(() => CameraPositionDto)
+  cameras: CameraPositionDto[]
+}
 
 export class CreateEventDto {
   @IsString()
@@ -22,6 +55,19 @@ export class CreateEventDto {
   @IsNumber()
   @Min(1)
   durationMinutes: number
+
+  @IsOptional()
+  @IsEnum(EventCategory)
+  category?: EventCategory
+
+  @IsOptional()
+  @IsString()
+  sport?: string
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => VenueDto)
+  venue?: VenueDto
 }
 
 export class UpdateEventDto {
@@ -53,4 +99,12 @@ export class UpdateEventDto {
   @IsOptional()
   @IsString()
   liveUrl?: string
+
+  @IsOptional()
+  @IsEnum(EventCategory)
+  category?: EventCategory
+
+  @IsOptional()
+  @IsString()
+  sport?: string
 }

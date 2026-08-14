@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing'
-import { Event, EventStatus } from '../storage/entities/event.entity'
+import { Event, EventCategory, EventStatus, VenueKind } from '../storage/entities/event.entity'
 import { Payment, PaymentStatus } from '../storage/entities/payment.entity'
 import { User } from '../storage/entities/user.entity'
 import { ViewStat } from '../storage/entities/view-stat.entity'
@@ -26,6 +26,9 @@ describe('ReportsService', () => {
         status: EventStatus.ENDED,
         scheduledAt: new Date(),
         durationMinutes: 60,
+        category: EventCategory.SHOW,
+        sport: 'Concierto',
+        venue: { kind: VenueKind.THEATER, name: 'Teatro', cameras: [] },
         createdAt: new Date(),
       },
     ])

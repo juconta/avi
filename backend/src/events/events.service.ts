@@ -1,8 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common'
-import { Event, EventStatus } from '../storage/entities/event.entity'
+import { Event, EventCategory, EventStatus, Venue, VenueKind } from '../storage/entities/event.entity'
 import { EVENT_REPO } from '../storage/repositories/tokens'
 import { CrudRepository } from '../storage/repositories/tokens'
 import { CreateEventDto, UpdateEventDto } from './dto/event.dto'
+import { buildVenue } from './venue.factory'
 
 @Injectable()
 export class EventsService {
@@ -26,6 +27,8 @@ export class EventsService {
   }
 
   async create(dto: CreateEventDto, streamerId: string): Promise<Event> {
+    const category = dto.category ?? EventCategory.SPORT
+    const venue = dto.venue ? ({ ...dto.venue, kind: dto.venue.kind as VenueKind } as Venue) : buildVenue(category, dto.sport)
     const event: Event = {
       id: crypto.randomUUID(),
       title: dto.title,
@@ -36,25 +39,52 @@ export class EventsService {
       status: EventStatus.SCHEDULED,
       scheduledAt: new Date(dto.scheduledAt),
       durationMinutes: dto.durationMinutes,
+      category,
+      sport: dto.sport,
+      venue,
       createdAt: new Date(),
     }
     return this.eventRepo.create(event)
   }
 
   async update(id: string, dto: UpdateEventDto): Promise<Event> {
-    const event = await this.eventRepo.update(id, { ...dto, scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined })
+    const event = await this.eventRepo.update(id, {
+      ...dto,
+      scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined,
+      category: dto.category ?? undefined,
+      sport: dto.sport ?? undefined,
+    })
     if (!event) throw new NotFoundException(`Evento ${id} no encontrado`)
     return event
   }
 
   async start(id: string): Promise<Event> {
+    const current = await this.findById(id)
+    const venue: Venue = {
+      ...current.venue,
+      cameras: current.venue.cameras.map((c, i) => ({
+        ...c,
+        liveUrl: c.liveUrl || this.defaultStream(i),
+      })),
+    }
     const event = await this.eventRepo.update(id, {
       status: EventStatus.LIVE,
       startedAt: new Date(),
       liveUrl: `https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`,
+      venue,
     })
     if (!event) throw new NotFoundException(`Evento ${id} no encontrado`)
     return event
+  }
+
+  private defaultStream(index: number): string {
+    const streams = [
+      'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      'https://test-streams.mux.dev/pts_shift/master.m3u8',
+      'https://test-streams.mux.dev/tos_ismc/main.m3u8',
+      'https://test-streams.mux.dev/bbb/bbb.m3u8',
+    ]
+    return streams[index % streams.length]
   }
 
   async end(id: string): Promise<Event> {

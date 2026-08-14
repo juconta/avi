@@ -7,6 +7,12 @@ import { eventsService, paymentsService } from '../services/data.service'
 import { colors, radius, spacing } from '../theme/colors'
 import { formatCurrency, formatDateTime } from '../utils/format'
 
+const categoryLabel: Record<string, string> = {
+  sport: 'Deporte',
+  racing: 'Automovilismo',
+  show: 'Espectáculo',
+}
+
 export default function EventDetailScreen({ route, navigation }: any) {
   const { id } = route.params
   const { user } = useAuth()
@@ -68,6 +74,22 @@ export default function EventDetailScreen({ route, navigation }: any) {
         <Text style={styles.muted}>{formatDateTime(event.scheduledAt)} · {event.durationMinutes} min</Text>
         <Text style={styles.price}>{formatCurrency(event.price)}</Text>
 
+        <View style={styles.tags}>
+          <View style={styles.tag}>
+            <Text style={styles.tagText}>{categoryLabel[event.category] ?? event.category}</Text>
+          </View>
+          {event.sport && (
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{event.sport}</Text>
+            </View>
+          )}
+          {event.venue.cameras.length > 0 && (
+            <View style={styles.tag}>
+              <Text style={styles.tagText}>{event.venue.cameras.length} cámaras</Text>
+            </View>
+          )}
+        </View>
+
         <Text style={styles.description}>{event.description}</Text>
 
         {canWatch ? (
@@ -121,6 +143,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
     marginBottom: spacing.md,
+  },
+  tags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  tag: {
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
+  },
+  tagText: {
+    color: colors.muted,
+    fontSize: 12,
+    fontWeight: '600',
   },
   description: {
     color: colors.muted,
