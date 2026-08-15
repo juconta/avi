@@ -3,9 +3,9 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import type { Event } from '../../../shared/src/types/event'
 import StateHandler from '../components/StateHandler'
 import { useAuth } from '../context/AuthContext'
-import { eventsService, paymentsService } from '../services/data.service'
+import { eventsService } from '../services/data.service'
 import { colors, radius, spacing } from '../theme/colors'
-import { formatCurrency, formatDateTime } from '../utils/format'
+import { formatDateTime } from '../utils/format'
 
 const categoryLabel: Record<string, string> = {
   sport: 'Deporte',
@@ -20,8 +20,6 @@ export default function EventDetailScreen({ route, navigation }: any) {
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [hasPaid, setHasPaid] = useState(false)
-  const [purchasing, setPurchasing] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -29,13 +27,6 @@ export default function EventDetailScreen({ route, navigation }: any) {
     try {
       const data = await eventsService.findById(id)
       setEvent(data)
-      if (user) {
-        try {
-          setHasPaid(await paymentsService.hasPaid(id))
-        } catch {
-          setHasPaid(false)
-        }
-      }
     } catch {
       setError('No se encontró el evento.')
     } finally {
@@ -47,24 +38,9 @@ export default function EventDetailScreen({ route, navigation }: any) {
     void load()
   }, [id])
 
-  const buy = async () => {
-    if (!event) return
-    setPurchasing(true)
-    try {
-      await paymentsService.create(event.id, event.price)
-      setHasPaid(true)
-    } catch {
-      setError('No se pudo procesar el pago.')
-    } finally {
-      setPurchasing(false)
-    }
-  }
-
   if (loading || error || !event) {
     return <StateHandler loading={loading} error={error} onRetry={load} />
   }
-
-  const canWatch = hasPaid || event.price === 0 || user?.role === 'admin'
 
   return (
     <ScrollView style={styles.container}>
@@ -72,7 +48,6 @@ export default function EventDetailScreen({ route, navigation }: any) {
       <View style={styles.body}>
         <Text style={styles.title}>{event.title}</Text>
         <Text style={styles.muted}>{formatDateTime(event.scheduledAt)} · {event.durationMinutes} min</Text>
-        <Text style={styles.price}>{formatCurrency(event.price)}</Text>
 
         <View style={styles.tags}>
           <View style={styles.tag}>
@@ -92,24 +67,13 @@ export default function EventDetailScreen({ route, navigation }: any) {
 
         <Text style={styles.description}>{event.description}</Text>
 
-        {canWatch ? (
-          <Pressable
-            style={styles.button}
-            onPress={() => navigation.navigate('Watch', { id: event.id })}
-          >
-            <Text style={styles.buttonText}>
-              {event.status === 'live' ? 'Ver en vivo' : event.status === 'ended' ? 'Ver repetición' : 'Ver'}
-            </Text>
-          </Pressable>
-        ) : (
-          <Pressable style={[styles.button, purchasing && styles.buttonDisabled]} onPress={buy} disabled={purchasing}>
-            <Text style={styles.buttonText}>
-              {purchasing ? 'Procesando…' : `Comprar por ${formatCurrency(event.price)}`}
-            </Text>
-          </Pressable>
-        )}
+        <Pressable style={styles.button} onPress={() => navigation.navigate('Watch', { id: event.id })}>
+          <Text style={styles.buttonText}>
+            {event.status === 'live' ? 'Ver en vivo' : event.status === 'ended' ? 'Ver repetición' : 'Ver'}
+          </Text>
+        </Pressable>
 
-        {!user && <Text style={styles.loginHint}>Inicia sesión para comprar o ver.</Text>}
+        {!user && <Text style={styles.loginHint}>Inicia sesión para chatear en vivo.</Text>}
       </View>
     </ScrollView>
   )
@@ -137,12 +101,6 @@ const styles = StyleSheet.create({
   muted: {
     color: colors.muted,
     marginBottom: spacing.sm,
-  },
-  price: {
-    color: colors.primary,
-    fontSize: 20,
-    fontWeight: '800',
-    marginBottom: spacing.md,
   },
   tags: {
     flexDirection: 'row',
@@ -173,9 +131,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: 'center',
-  },
-  buttonDisabled: {
-    opacity: 0.6,
   },
   buttonText: {
     color: colors.white,

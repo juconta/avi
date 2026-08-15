@@ -34,7 +34,7 @@ export default function EventCard({ event, onPress }: Props) {
         </Text>
         <Text style={styles.muted}>{formatDateTime(event.scheduledAt)}</Text>
         <View style={styles.footer}>
-          <Text style={styles.price}>{formatCurrency(event.price)}</Text>
+          <Text style={styles.free}>{event.price === 0 ? 'Gratis' : formatCurrency(event.price)}</Text>
           <Text style={styles.muted}>{event.durationMinutes} min</Text>
         </View>
       </View>
@@ -102,6 +102,11 @@ const styles = StyleSheet.create({
   },
   price: {
     color: colors.primary,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  free: {
+    color: colors.success,
     fontWeight: '700',
     fontSize: 15,
   },

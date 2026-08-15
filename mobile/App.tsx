@@ -13,7 +13,7 @@ import RegisterScreen from './src/screens/RegisterScreen'
 import VodCatalogScreen from './src/screens/VodCatalogScreen'
 import VodDetailScreen from './src/screens/VodDetailScreen'
 import ProfileScreen from './src/screens/ProfileScreen'
-import CheckoutScreen from './src/screens/CheckoutScreen'
+import MyEventsScreen from './src/screens/MyEventsScreen'
 import AdminScreen from './src/screens/AdminScreen'
 
 const Stack = createNativeStackNavigator()
@@ -43,7 +43,7 @@ function HomeTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Eventos' }} />
       <Tab.Screen name="Catalog" component={VodCatalogScreen} options={{ title: 'Catálogo' }} />
-      <Tab.Screen name="Purchases" component={CheckoutScreen} options={{ title: 'Compras' }} />
+      <Tab.Screen name="Purchases" component={MyEventsScreen} options={{ title: 'Mis eventos' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Perfil' }} />
     </Tab.Navigator>
   )

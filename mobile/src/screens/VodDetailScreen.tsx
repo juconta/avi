@@ -44,26 +44,22 @@ export default function VodDetailScreen({ route }: any) {
     return <StateHandler loading={loading} error={error} onRetry={load} />
   }
 
-  const isFree = vod.price === 0
-
   return (
     <ScrollView style={styles.container}>
       <Image source={{ uri: vod.thumbUrl }} style={styles.hero} resizeMode="cover" />
       <View style={styles.body}>
         <Text style={styles.title}>{vod.title}</Text>
         <Text style={styles.muted}>
-          {formatDuration(vod.durationSeconds)} · {isFree ? 'Gratis' : formatCurrency(vod.price)}
+          {formatDuration(vod.durationSeconds)} · {vod.price === 0 ? 'Gratis' : formatCurrency(vod.price)}
         </Text>
         <Text style={styles.description}>{vod.description}</Text>
 
-        {isFree && (
-          <VideoView
-            player={player}
-            style={styles.player}
-            nativeControls
-            allowsPictureInPicture
-          />
-        )}
+        <VideoView
+          player={player}
+          style={styles.player}
+          nativeControls
+          allowsPictureInPicture
+        />
       </View>
     </ScrollView>
   )

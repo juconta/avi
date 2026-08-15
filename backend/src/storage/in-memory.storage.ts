@@ -89,7 +89,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Final del Campeonato de Fútbol',
       description:
         'La gran final del torneo. Transmisión multi-cámara: 4 lados del estadio (superior e inferior), cámaras detrás de cada arco y cámara en el oído del árbitro.',
-      price: 12.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avi1/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
@@ -108,7 +108,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Gran Premio de F1',
       description:
         'Carrera de automovilismo con cámaras estratégicas en la pista, en cada vehículo y en el casco de los pilotos.',
-      price: 19.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avif1/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -125,7 +125,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Concierto en vivo de prueba',
       description:
         'Un concierto para probar el streaming PPV con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
-      price: 9.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avishow/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -141,7 +141,7 @@ export class InMemoryStorage implements OnModuleInit {
       id: 'evt-4',
       title: 'Evento finalizado',
       description: 'Un evento que ya terminó, disponible para ver el relato en cámara principal.',
-      price: 4.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avi2/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.ENDED,
@@ -161,7 +161,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Semifinal de Básquet en vivo',
       description:
         'Partido de básquet con cámaras en los cuatro lados del estadio, sobre cada aro y en el oído de los árbitros.',
-      price: 8.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avibasket/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
@@ -180,7 +180,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Final de Tenis: Master 1000',
       description:
         'La final del torneo de tenis con transmisión multi-cámara desde todos los ángulos de la cancha central.',
-      price: 14.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avitenis/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -197,7 +197,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Vóley Playa: Campeonato Mundial',
       description:
         'Vóley playa con cámaras en los cuatro lados de la cancha y en el oído del árbitro principal.',
-      price: 6.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avivoley/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -214,7 +214,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Gran Premio de MotoGP',
       description:
         'Motociclismo con cámaras estratégicas en la pista, en cada moto y en el casco de los pilotos.',
-      price: 17.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/avimoto/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -231,7 +231,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Obra de Teatro: El Fantasma de la Ópera',
       description:
         'Obra de teatro en directo con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
-      price: 11.99,
+      price: 0,
       coverImage: 'https://picsum.photos/seed/aviteatro/1280/720',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
@@ -250,7 +250,7 @@ export class InMemoryStorage implements OnModuleInit {
       durationSeconds: 3600,
       thumbUrl: 'https://picsum.photos/seed/avivod/1280/720',
       videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      price: 2.99,
+      price: 0,
       createdAt: now,
     })
 

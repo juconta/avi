@@ -34,8 +34,6 @@ export default function VodDetail() {
     return <StateHandler loading={loading} error={error} onRetry={load} />
   }
 
-  const isFree = vod.price === 0
-
   return (
     <div className="container detail">
       <div className="detail-hero">
@@ -43,18 +41,14 @@ export default function VodDetail() {
         <div className="detail-overlay">
           <h1>{vod.title}</h1>
           <p>{formatDuration(vod.durationSeconds)}</p>
-          <div className="price-big">{isFree ? 'Gratis' : formatCurrency(vod.price)}</div>
+          <div className="price-big price-free">{vod.price === 0 ? 'Gratis' : formatCurrency(vod.price)}</div>
         </div>
       </div>
 
       <div className="detail-actions">
-        {isFree ? (
-          <a href="#player" className="btn btn-primary btn-lg">
-            Reproducir
-          </a>
-        ) : (
-          <span className="badge badge-ready">Requiere compra</span>
-        )}
+        <a href="#player" className="btn btn-primary btn-lg">
+          Reproducir
+        </a>
       </div>
 
       <p className="detail-description">{vod.description}</p>

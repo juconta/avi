@@ -234,6 +234,10 @@ a {
   font-weight: 700;
 }
 
+.price-free {
+  color: var(--success);
+}
+
 .price-big {
   font-size: 1.6rem;
   font-weight: 800;

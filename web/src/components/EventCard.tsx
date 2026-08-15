@@ -23,7 +23,7 @@ export default function EventCard({ event }: { event: Event }) {
         <h3>{event.title}</h3>
         <p className="muted">{formatDateTime(event.scheduledAt)}</p>
         <div className="event-card-footer">
-          <span className="price">{formatCurrency(event.price)}</span>
+          <span className={event.price === 0 ? 'price price-free' : 'price'}>{event.price === 0 ? 'Gratis' : formatCurrency(event.price)}</span>
           <span className="muted">{event.durationMinutes} min</span>
         </div>
       </div>
