@@ -76,6 +76,7 @@ function RootNavigator() {
           <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Crear cuenta' }} />
           <Stack.Screen name="EventDetail" component={EventDetailScreen} options={{ title: '' }} />
           <Stack.Screen name="VodDetail" component={VodDetailScreen} options={{ title: '' }} />
+          <Stack.Screen name="Watch" component={WatchScreen} options={{ title: '' }} />
         </>
       ) : (
         <>
