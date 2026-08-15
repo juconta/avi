@@ -21,6 +21,27 @@ import { colors, radius, spacing } from '../theme/colors'
 
 const MAX_CAMERAS = 4
 
+function CameraPlayer({ uri }: { uri: string }) {
+  const player = useVideoPlayer({ uri }, (p) => {
+    p.loop = false
+  })
+
+  useEffect(() => {
+    player.play()
+    return () => player.pause()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uri, player])
+
+  return (
+    <VideoView
+      player={player}
+      style={StyleSheet.absoluteFill}
+      contentFit="contain"
+      nativeControls
+    />
+  )
+}
+
 export default function WatchScreen({ route }: any) {
   const { id } = route.params
   const { user } = useAuth()
@@ -33,23 +54,6 @@ export default function WatchScreen({ route }: any) {
   const [input, setInput] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [selectorOpen, setSelectorOpen] = useState(false)
-
-  const playerPool = [
-    useVideoPlayer(null, (p) => {
-      p.loop = false
-    }),
-    useVideoPlayer(null, (p) => {
-      p.loop = false
-    }),
-    useVideoPlayer(null, (p) => {
-      p.loop = false
-    }),
-    useVideoPlayer(null, (p) => {
-      p.loop = false
-    }),
-  ]
-
-  const cameraSources = useRef<string[]>(['', '', '', ''])
 
   const cameras = useMemo<CameraPosition[]>(() => event?.venue.cameras ?? [], [event])
 
@@ -85,30 +89,9 @@ export default function WatchScreen({ route }: any) {
     void load()
     return () => {
       disconnectSocket()
-      playerPool.forEach((p) => p.pause())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
-
-  useEffect(() => {
-    const visibleCameras = cameras
-      .filter((c) => selectedIds.includes(c.id))
-      .slice(0, MAX_CAMERAS)
-
-    visibleCameras.forEach((camera, index) => {
-      const player = playerPool[index]
-      if (cameraSources.current[index] !== camera.liveUrl) {
-        cameraSources.current[index] = camera.liveUrl
-        player.replace({ uri: camera.liveUrl })
-      }
-      player.play()
-    })
-
-    for (let i = visibleCameras.length; i < playerPool.length; i++) {
-      playerPool[i].pause()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIds, cameras])
 
   const toggleCamera = (camera: CameraPosition) => {
     setSelectedIds((prev) => {
@@ -138,12 +121,7 @@ export default function WatchScreen({ route }: any) {
         <View style={styles.videoGrid}>
           {Array.from({ length: selectedCameras.length }).map((_, index) => (
             <View key={selectedCameras[index].id} style={isWide ? styles.tile : styles.tileSingle}>
-              <VideoView
-                player={playerPool[index]}
-                style={StyleSheet.absoluteFill}
-                contentFit="contain"
-                nativeControls
-              />
+              <CameraPlayer uri={selectedCameras[index].liveUrl} />
               <View style={styles.cameraTag}>
                 <Text style={styles.cameraTagText}>{selectedCameras[index].label}</Text>
               </View>
