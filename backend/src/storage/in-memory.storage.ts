@@ -156,6 +156,93 @@ export class InMemoryStorage implements OnModuleInit {
       createdAt: yesterday,
     })
 
+    this.events.create({
+      id: 'evt-5',
+      title: 'Semifinal de Básquet en vivo',
+      description:
+        'Partido de básquet con cámaras en los cuatro lados del estadio, sobre cada aro y en el oído de los árbitros.',
+      price: 8.99,
+      coverImage: 'https://picsum.photos/seed/avibasket/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.LIVE,
+      scheduledAt: later,
+      startedAt: now,
+      durationMinutes: 110,
+      category: EventCategory.SPORT,
+      sport: 'Básquet',
+      venue: buildVenue(EventCategory.SPORT, 'Básquet'),
+      liveUrl: 'https://test-streams.mux.dev/pts_shift/master.m3u8',
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-6',
+      title: 'Final de Tenis: Master 1000',
+      description:
+        'La final del torneo de tenis con transmisión multi-cámara desde todos los ángulos de la cancha central.',
+      price: 14.99,
+      coverImage: 'https://picsum.photos/seed/avitenis/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 150,
+      category: EventCategory.SPORT,
+      sport: 'Tenis',
+      venue: buildVenue(EventCategory.SPORT, 'Tenis'),
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-7',
+      title: 'Vóley Playa: Campeonato Mundial',
+      description:
+        'Vóley playa con cámaras en los cuatro lados de la cancha y en el oído del árbitro principal.',
+      price: 6.99,
+      coverImage: 'https://picsum.photos/seed/avivoley/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 90,
+      category: EventCategory.SPORT,
+      sport: 'Vóley Playa',
+      venue: buildVenue(EventCategory.SPORT, 'Vóley Playa'),
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-8',
+      title: 'Gran Premio de MotoGP',
+      description:
+        'Motociclismo con cámaras estratégicas en la pista, en cada moto y en el casco de los pilotos.',
+      price: 17.99,
+      coverImage: 'https://picsum.photos/seed/avimoto/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 120,
+      category: EventCategory.RACING,
+      sport: 'MotoGP',
+      venue: buildVenue(EventCategory.RACING, 'MotoGP'),
+      createdAt: now,
+    })
+
+    this.events.create({
+      id: 'evt-9',
+      title: 'Obra de Teatro: El Fantasma de la Ópera',
+      description:
+        'Obra de teatro en directo con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
+      price: 11.99,
+      coverImage: 'https://picsum.photos/seed/aviteatro/1280/720',
+      streamerId: 'admin-1',
+      status: EventStatus.SCHEDULED,
+      scheduledAt: later,
+      durationMinutes: 150,
+      category: EventCategory.SHOW,
+      sport: 'Obra de teatro',
+      venue: buildVenue(EventCategory.SHOW, 'Obra de teatro'),
+      createdAt: now,
+    })
+
     this.vodAssets.create({
       id: 'vod-1',
       title: 'Documental: La historia del streaming',
