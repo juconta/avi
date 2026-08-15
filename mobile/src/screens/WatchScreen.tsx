@@ -38,6 +38,7 @@ function CameraPlayer({ uri }: { uri: string }) {
       style={StyleSheet.absoluteFill}
       contentFit="contain"
       nativeControls
+      surfaceType="textureView"
     />
   )
 }

@@ -24,22 +24,8 @@ export default function App() {
           <Route path="/event/:id" element={<EventDetail />} />
           <Route path="/vod" element={<VodCatalog />} />
           <Route path="/vod/:id" element={<VodDetail />} />
-          <Route
-            path="/watch/:id"
-            element={
-              <ProtectedRoute>
-                <Watch />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <Checkout />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/watch/:id" element={<Watch />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route
             path="/dashboard"
             element={
