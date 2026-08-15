@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -10,8 +10,8 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import { useVideoPlayer, VideoView } from 'expo-video'
 import type { CameraPosition, Event } from '../../../shared/src/types/event'
+import HlsWebPlayer from '../components/HlsWebPlayer'
 import StateHandler from '../components/StateHandler'
 import VenueMap, { cameraBadgeColor } from '../components/VenueMap'
 import { useAuth } from '../context/AuthContext'
@@ -22,25 +22,7 @@ import { colors, radius, spacing } from '../theme/colors'
 const MAX_CAMERAS = 4
 
 function CameraPlayer({ uri }: { uri: string }) {
-  const player = useVideoPlayer({ uri }, (p) => {
-    p.loop = false
-  })
-
-  useEffect(() => {
-    player.play()
-    return () => player.pause()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uri, player])
-
-  return (
-    <VideoView
-      player={player}
-      style={StyleSheet.absoluteFill}
-      contentFit="contain"
-      nativeControls
-      surfaceType="textureView"
-    />
-  )
+  return <HlsWebPlayer uri={uri} />
 }
 
 export default function WatchScreen({ route }: any) {
