@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
+import { jwtSecret } from '../common/env'
 import { StorageModule } from '../storage/storage.module'
 import { StreamingController } from './streaming.controller'
 import { StreamingGateway } from './streaming.gateway'
@@ -9,7 +10,7 @@ import { StreamingService } from './streaming.service'
   imports: [
     StorageModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || 'avi_dev_secret_change_in_production',
+      secret: jwtSecret(),
       signOptions: { expiresIn: '12h' },
     }),
   ],

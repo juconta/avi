@@ -6,6 +6,9 @@ import { join } from 'path'
 export class DebugController {
   @Post('log')
   log(@Body() body: { msg?: string }) {
+    if (!process.env.DEBUG_MOBILE_LOG) {
+      return { ok: true, skipped: true }
+    }
     try {
       const dir = join(process.cwd(), '.debug')
       mkdirSync(dir, { recursive: true })

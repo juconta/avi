@@ -1,8 +1,9 @@
 import { useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { WebView } from 'react-native-webview'
+import { API_URL } from '../config'
 
-const HLS_HTML = `
+const buildHtml = (logUrl: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +21,7 @@ const HLS_HTML = `
   var hls = null;
 
   function sendLog(msg) {
-    try { fetch('http://192.168.0.7:4000/api/debug/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ msg: msg }), keepalive: true }); } catch (e) {}
+    try { fetch('${logUrl}/debug/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ msg: msg }), keepalive: true }); } catch (e) {}
   }
 
   function init(url) {
@@ -65,7 +66,7 @@ export default function HlsWebPlayer({ uri }: Props) {
     <View style={styles.root}>
       <WebView
         ref={webRef}
-        source={{ html: HLS_HTML }}
+        source={{ html: buildHtml(API_URL) }}
         style={styles.web}
         originWhitelist={['*']}
         javaScriptEnabled

@@ -1,4 +1,4 @@
-import { API_URL } from './api'
+import { API_URL } from '../config'
 
 export function sendDebugLog(msg: string) {
   try {
