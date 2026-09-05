@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from 'react-native'
 import type { CameraPosition, Event } from '../../../shared/src/types/event'
@@ -22,12 +23,17 @@ import { colors, radius, spacing } from '../theme/colors'
 const MAX_CAMERAS = 4
 
 function CameraPlayer({ uri }: { uri: string }) {
-  return <HlsWebPlayer uri={uri} />
+  return (
+    <View style={styles.playerBox}>
+      <HlsWebPlayer uri={uri} />
+    </View>
+  )
 }
 
 export default function WatchScreen({ route }: any) {
   const { id } = route.params
   const { user } = useAuth()
+  const { width } = useWindowDimensions()
 
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
@@ -97,15 +103,19 @@ export default function WatchScreen({ route }: any) {
   }
 
   const isWide = selectedCameras.length > 1
+  const tileSide = isWide ? width / 2 - 1 : width
+  const tileHeight = Math.round(tileSide * (9 / 16))
 
   return (
     <View style={styles.container}>
       <View style={styles.videoArea}>
         <View style={styles.videoGrid}>
           {Array.from({ length: selectedCameras.length }).map((_, index) => (
-            <View key={selectedCameras[index].id} style={isWide ? styles.tile : styles.tileSingle}>
-              <CameraPlayer uri={selectedCameras[index].liveUrl} />
-              <View style={styles.cameraTag}>
+            <View
+              key={selectedCameras[index].id}
+              style={[isWide ? styles.tile : styles.tileSingle, { height: tileHeight }]}
+            >
+              <CameraPlayer uri={selectedCameras[index].liveUrl} />              <View style={styles.cameraTag}>
                 <Text style={styles.cameraTagText}>{selectedCameras[index].label}</Text>
               </View>
             </View>
@@ -201,14 +211,20 @@ const styles = StyleSheet.create({
   },
   tile: {
     width: '50%',
-    aspectRatio: 16 / 9,
     padding: 1,
     backgroundColor: colors.black,
   },
   tileSingle: {
     width: '100%',
-    aspectRatio: 16 / 9,
     backgroundColor: colors.black,
+  },
+  playerBox: {
+    flex: 1,
+    width: '100%',
+    minHeight: 180,
+    backgroundColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cameraTag: {
     position: 'absolute',

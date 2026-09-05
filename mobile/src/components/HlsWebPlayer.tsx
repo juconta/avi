@@ -1,4 +1,5 @@
-import { StyleSheet } from 'react-native'
+import { useRef } from 'react'
+import { StyleSheet, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 
 const HLS_HTML = `
@@ -9,28 +10,45 @@ const HLS_HTML = `
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
 <style>
   html, body { margin: 0; padding: 0; background: #000; width: 100%; height: 100%; overflow: hidden; }
-  video { width: 100%; height: 100%; background: #000; }
+  #v { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
 </style>
 </head>
 <body>
-<video id="v" controls playsinline autoplay></video>
+<video id="v" muted playsinline autoplay preload="auto" controls></video>
 <script>
   var video = document.getElementById('v');
   var hls = null;
-  function play(url) {
+
+  function sendLog(msg) {
+    try { fetch('http://192.168.0.7:4000/api/debug/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ msg: msg }), keepalive: true }); } catch (e) {}
+  }
+
+  function init(url) {
+    sendLog('PLAY url=' + url);
     if (hls) { hls.destroy(); hls = null; }
-    if (Hls.isSupported()) {
-      hls = new Hls();
+    if (window.Hls && window.Hls.isSupported()) {
+      hls = new window.Hls({ debug: false, capLevelToPlayerSize: false, startLevel: -1 });
+      hls.on(window.Hls.Events.MANIFEST_PARSED, function () { sendLog('MANIFEST_PARSED ok'); });
+      hls.on(window.Hls.Events.ERROR, function (e, data) {
+        sendLog('HLS_ERROR ' + data.type + ' / ' + data.details + (data.fatal ? ' | fatal' : ''));
+        if (data.fatal) {
+          if (data.type === window.Hls.ErrorTypes.NETWORK_ERROR) hls.startLoad();
+          else if (data.type === window.Hls.ErrorTypes.MEDIA_ERROR) hls.recoverMediaError();
+        }
+      });
       hls.loadSource(url);
       hls.attachMedia(video);
-    } else {
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = url;
+    } else {
+      sendLog('NO_HLS');
+      return;
     }
-    video.play().catch(function () {});
+    video.addEventListener('loadeddata', function () {
+      sendLog('LOADEDDATA w=' + video.videoWidth + ' h=' + video.videoHeight);
+    });
+    video.play().then(function () { sendLog('PLAYING ok'); }).catch(function (err) { sendLog('PLAY_ERROR ' + (err && err.message)); });
   }
-  window.addEventListener('message', function (e) {
-    if (e.data && e.data.url) play(e.data.url);
-  });
 </script>
 </body>
 </html>
@@ -41,17 +59,38 @@ interface Props {
 }
 
 export default function HlsWebPlayer({ uri }: Props) {
+  const webRef = useRef<WebView>(null)
+
   return (
-    <WebView
-      source={{ html: HLS_HTML }}
-      style={StyleSheet.absoluteFill}
-      originWhitelist={['*']}
-      javaScriptEnabled
-      domStorageEnabled
-      mediaPlaybackRequiresUserAction={false}
-      allowsInlineMediaPlayback
-      startInLoadingState
-      injectedJavaScriptAfterLoad={`window.postMessage({ url: ${JSON.stringify(uri)} });`}
-    />
+    <View style={styles.root}>
+      <WebView
+        ref={webRef}
+        source={{ html: HLS_HTML }}
+        style={styles.web}
+        originWhitelist={['*']}
+        javaScriptEnabled
+        domStorageEnabled
+        mediaPlaybackRequiresUserAction={false}
+        allowsInlineMediaPlayback
+        setSupportMultipleWindows={false}
+        onLoadEnd={() => {
+          webRef.current?.injectJavaScript(`init(${JSON.stringify(uri)}); true;`)
+        }}
+      />
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#000',
+  },
+  web: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+})

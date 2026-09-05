@@ -4,6 +4,7 @@ import type { Event } from '../../../shared/src/types/event'
 import EventCard from '../components/EventCard'
 import StateHandler from '../components/StateHandler'
 import { eventsService } from '../services/data.service'
+import { sendDebugLog } from '../services/debug'
 import { colors, spacing } from '../theme/colors'
 
 export default function HomeScreen({ navigation }: any) {
@@ -14,10 +15,13 @@ export default function HomeScreen({ navigation }: any) {
 
   const load = async () => {
     try {
+      sendDebugLog('LOAD_EVENTS inicio')
       const data = await eventsService.findAll()
+      sendDebugLog(`LOAD_EVENTS ok count=${data.length} isArray=${Array.isArray(data)}`)
       setEvents(data)
       setError(null)
-    } catch {
+    } catch (e: any) {
+      sendDebugLog(`LOAD_EVENTS error=${e?.message} code=${e?.code} resp=${e?.response?.status}`)
       setError('No se pudieron cargar los eventos.')
     } finally {
       setLoading(false)
