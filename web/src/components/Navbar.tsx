@@ -13,6 +13,7 @@ export default function Navbar() {
         <Link to="/">Inicio</Link>
         <Link to="/vod">Catálogo</Link>
         {user?.role === 'admin' && <Link to="/dashboard">Dashboard</Link>}
+        {user?.role === 'admin' && <Link to="/admin/events">Admin</Link>}
         {user ? (
           <div className="navbar-user">
             <span>{user.name}</span>

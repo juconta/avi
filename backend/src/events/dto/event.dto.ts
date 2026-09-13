@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from 'class-validator'
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsDateString, IsEnum, IsNumber, IsObject, IsOptional, IsString, IsUrl, Matches, Min, ValidateNested } from 'class-validator'
 import { Type } from 'class-transformer'
 import { EventCategory, EventStatus } from '../../storage/entities/event.entity'
 
@@ -32,6 +32,15 @@ class VenueDto {
   @ValidateNested({ each: true })
   @Type(() => CameraPositionDto)
   cameras: CameraPositionDto[]
+}
+
+export class SourceDto {
+  @IsString()
+  label: string
+
+  @IsUrl({ protocols: ['http', 'https'] })
+  @Matches(/\.m3u8$/i, { message: 'liveUrl debe terminar en .m3u8' })
+  liveUrl: string
 }
 
 export class CreateEventDto {
@@ -68,6 +77,20 @@ export class CreateEventDto {
   @ValidateNested()
   @Type(() => VenueDto)
   venue?: VenueDto
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(12)
+  @ValidateNested({ each: true })
+  @Type(() => SourceDto)
+  sources?: SourceDto[]
+}
+
+export class ValidateSourceDto {
+  @IsUrl({ protocols: ['http', 'https'] })
+  @Matches(/\.m3u8$/i, { message: 'liveUrl debe terminar en .m3u8' })
+  url: string
 }
 
 export class UpdateEventDto {
@@ -107,4 +130,12 @@ export class UpdateEventDto {
   @IsOptional()
   @IsString()
   sport?: string
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(12)
+  @ValidateNested({ each: true })
+  @Type(() => SourceDto)
+  sources?: SourceDto[]
 }

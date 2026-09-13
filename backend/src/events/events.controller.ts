@@ -6,7 +6,7 @@ import { Roles, UserRole } from '../common/decorators/roles.decorator'
 import { AuthUser } from '../common/guards/roles.guard'
 import { RolesGuard } from '../common/guards/roles.guard'
 import { EventStatus } from '../storage/entities/event.entity'
-import { CreateEventDto, UpdateEventDto } from './dto/event.dto'
+import { CreateEventDto, UpdateEventDto, ValidateSourceDto } from './dto/event.dto'
 import { EventsService } from './events.service'
 
 @ApiTags('events')
@@ -27,6 +27,14 @@ export class EventsController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.eventsService.findById(id)
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post('validate-source')
+  @Roles(UserRole.ADMIN, UserRole.STREAMER)
+  validateSource(@Body() dto: ValidateSourceDto) {
+    return this.eventsService.validateSource(dto.url)
   }
 
   @ApiBearerAuth()
