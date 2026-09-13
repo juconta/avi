@@ -1,25 +1,64 @@
 import { CameraPosition, CameraType, EventCategory, Venue, VenueKind } from '../storage/entities/event.entity'
 
 /**
- * Señales de demostración distintas por cámara (HLS público).
- * Se rotan para que cada cámara tenga un feed propio en la vista múltiple.
+ * Clips HLS realistas por categoría, servidos por el backend en /hls.
+ * Cada variante (a/b/c/d) es un tramo distinto del mismo partido/evento,
+ * para que en la vista múltiple cada cámara muestre un ángulo diferente.
  */
-const DEMO_STREAMS = [
+const HLS_BASE = 'https://avi-zaus.onrender.com/hls'
+
+const FOOTBALL_STREAMS = [
+  `${HLS_BASE}/football_a/index.m3u8`,
+  `${HLS_BASE}/football_b/index.m3u8`,
+  `${HLS_BASE}/football_c/index.m3u8`,
+  `${HLS_BASE}/football_d/index.m3u8`,
+]
+
+const BASKET_STREAMS = [
+  `${HLS_BASE}/basket_a/index.m3u8`,
+  `${HLS_BASE}/basket_b/index.m3u8`,
+  `${HLS_BASE}/basket_c/index.m3u8`,
+  `${HLS_BASE}/basket_d/index.m3u8`,
+]
+
+const RACING_STREAMS = [
+  `${HLS_BASE}/racing_a/index.m3u8`,
+  `${HLS_BASE}/racing_b/index.m3u8`,
+  `${HLS_BASE}/racing_c/index.m3u8`,
+  `${HLS_BASE}/racing_d/index.m3u8`,
+]
+
+const CONCERT_STREAMS = [
+  `${HLS_BASE}/concert_a/index.m3u8`,
+  `${HLS_BASE}/concert_b/index.m3u8`,
+  `${HLS_BASE}/concert_c/index.m3u8`,
+  `${HLS_BASE}/concert_d/index.m3u8`,
+]
+
+const FALLBACK_STREAMS = [
   'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
   'https://test-streams.mux.dev/pts_shift/master.m3u8',
   'https://test-streams.mux.dev/tos_ismc/main.m3u8',
   'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
   'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8',
   'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-  'https://mtoczko.github.io/hls-test-streams/test-gap/playlist.m3u8',
-  'https://playertest.longtailvideo.com/adaptive/bipbop/gear1/prog_index.m3u8',
 ]
 
 const cameraTypesWithGoals: string[] = ['futbol', 'fútbol', 'hockey', 'handball', 'futsal', 'handbol']
 const basketballLike: string[] = ['basquet', 'básquet', 'basketball', 'baloncesto']
 
-function streamFor(index: number): string {
-  return DEMO_STREAMS[index % DEMO_STREAMS.length]
+function streamsFor(category: EventCategory, sport?: string): string[] {
+  const norm = (sport ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  if (category === EventCategory.RACING) return RACING_STREAMS
+  if (basketballLike.some((b) => norm.includes(b))) return BASKET_STREAMS
+  if (cameraTypesWithGoals.some((g) => norm.includes(g))) return FOOTBALL_STREAMS
+  if (norm.includes('concierto') || norm.includes('show') || norm.includes('teatro')) return CONCERT_STREAMS
+  return FALLBACK_STREAMS
+}
+
+function streamFor(category: EventCategory, sport: string | undefined, index: number): string {
+  const streams = streamsFor(category, sport)
+  return streams[index % streams.length]
 }
 
 function makeCamera(kind: CameraType, label: string, description: string, x: number, y: number): CameraPosition {
@@ -126,7 +165,7 @@ export function buildVenue(category: EventCategory, sport?: string): Venue {
     cameras = [...stadiumSideCameras(), ...stageCameras()]
   }
 
-  cameras = cameras.map((c, i) => ({ ...c, liveUrl: streamFor(i) }))
+  cameras = cameras.map((c, i) => ({ ...c, liveUrl: streamFor(category, sport, i) }))
 
   return { kind, name, cameras }
 }

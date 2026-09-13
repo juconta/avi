@@ -64,29 +64,23 @@ export class EventsService {
       ...current.venue,
       cameras: current.venue.cameras.map((c, i) => ({
         ...c,
-        liveUrl: c.liveUrl || this.defaultStream(i),
+        liveUrl: c.liveUrl || this.defaultStream(current.category, current.sport, i),
       })),
     }
     const event = await this.eventRepo.update(id, {
       status: EventStatus.LIVE,
       startedAt: new Date(),
-      liveUrl: `https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8`,
+      liveUrl: this.defaultStream(current.category, current.sport, 0),
       venue,
     })
     if (!event) throw new NotFoundException(`Evento ${id} no encontrado`)
     return event
   }
 
-  private defaultStream(index: number): string {
-    const streams = [
-      'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      'https://test-streams.mux.dev/pts_shift/master.m3u8',
-      'https://test-streams.mux.dev/tos_ismc/main.m3u8',
-      'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
-      'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8',
-      'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-    ]
-    return streams[index % streams.length]
+  private defaultStream(category: EventCategory, sport: string | undefined, index: number): string {
+    const venue = buildVenue(category, sport)
+    return venue.cameras[index % venue.cameras.length]?.liveUrl
+      ?? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
   }
 
   async end(id: string): Promise<Event> {

@@ -23,7 +23,21 @@ export default function HlsPlayer({ src, poster, autoPlay = true }: Props) {
       hls.attachMedia(video)
     } else {
       video.src = src
+      video.loop = true
     }
+
+    const restart = () => {
+      if (hls) {
+        video.currentTime = 0
+        hls.startLoad()
+      } else {
+        video.currentTime = 0
+      }
+      video.play().catch(() => {
+        /* autoplay bloqueado por el navegador */
+      })
+    }
+    video.addEventListener('ended', restart)
 
     if (autoPlay) {
       video.play().catch(() => {
@@ -31,7 +45,10 @@ export default function HlsPlayer({ src, poster, autoPlay = true }: Props) {
       })
     }
 
-    return () => hls?.destroy()
+    return () => {
+      video.removeEventListener('ended', restart)
+      hls?.destroy()
+    }
   }, [src])
 
   return (

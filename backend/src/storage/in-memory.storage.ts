@@ -99,7 +99,7 @@ export class InMemoryStorage implements OnModuleInit {
       category: EventCategory.SPORT,
       sport: 'Fútbol',
       venue: buildVenue(EventCategory.SPORT, 'Fútbol'),
-      liveUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      liveUrl: 'https://avi-zaus.onrender.com/hls/football_a/index.m3u8',
       createdAt: now,
     })
 
@@ -111,29 +111,33 @@ export class InMemoryStorage implements OnModuleInit {
       price: 0,
       coverImage: 'https://picsum.photos/seed/avif1/1280/720',
       streamerId: 'admin-1',
-      status: EventStatus.SCHEDULED,
+      status: EventStatus.LIVE,
       scheduledAt: later,
+      startedAt: now,
       durationMinutes: 180,
       category: EventCategory.RACING,
       sport: 'F1',
       venue: buildVenue(EventCategory.RACING, 'F1'),
+      liveUrl: 'https://avi-zaus.onrender.com/hls/racing_a/index.m3u8',
       createdAt: now,
     })
 
     this.events.create({
       id: 'evt-3',
-      title: 'Concierto en vivo de prueba',
+      title: 'Recital en vivo',
       description:
-        'Un concierto para probar el streaming PPV con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
+        'Recital en vivo con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
       price: 0,
       coverImage: 'https://picsum.photos/seed/avishow/1280/720',
       streamerId: 'admin-1',
-      status: EventStatus.SCHEDULED,
+      status: EventStatus.LIVE,
       scheduledAt: later,
+      startedAt: now,
       durationMinutes: 120,
       category: EventCategory.SHOW,
       sport: 'Concierto',
       venue: buildVenue(EventCategory.SHOW, 'Concierto'),
+      liveUrl: 'https://avi-zaus.onrender.com/hls/concert_a/index.m3u8',
       createdAt: now,
     })
 
@@ -152,7 +156,7 @@ export class InMemoryStorage implements OnModuleInit {
       category: EventCategory.SPORT,
       sport: 'Básquet',
       venue: buildVenue(EventCategory.SPORT, 'Básquet'),
-      liveUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      liveUrl: 'https://avi-zaus.onrender.com/hls/basket_a/index.m3u8',
       createdAt: yesterday,
     })
 
@@ -171,7 +175,7 @@ export class InMemoryStorage implements OnModuleInit {
       category: EventCategory.SPORT,
       sport: 'Básquet',
       venue: buildVenue(EventCategory.SPORT, 'Básquet'),
-      liveUrl: 'https://test-streams.mux.dev/pts_shift/master.m3u8',
+      liveUrl: 'https://avi-zaus.onrender.com/hls/basket_b/index.m3u8',
       createdAt: now,
     })
 

@@ -19,6 +19,7 @@ const buildHtml = (logUrl: string) => `
 <script>
   var video = document.getElementById('v');
   var hls = null;
+  var endedHandlerAttached = false;
 
   function sendLog(msg) {
     try { fetch('${logUrl}/debug/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ msg: msg }), keepalive: true }); } catch (e) {}
@@ -41,6 +42,7 @@ const buildHtml = (logUrl: string) => `
       hls.attachMedia(video);
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = url;
+      video.loop = true;
     } else {
       sendLog('NO_HLS');
       return;
@@ -48,6 +50,15 @@ const buildHtml = (logUrl: string) => `
     video.addEventListener('loadeddata', function () {
       sendLog('LOADEDDATA w=' + video.videoWidth + ' h=' + video.videoHeight);
     });
+    if (!endedHandlerAttached) {
+      endedHandlerAttached = true;
+      video.addEventListener('ended', function () {
+        sendLog('ENDED -> restart');
+        if (hls) hls.startLoad();
+        video.currentTime = 0;
+        video.play().catch(function () {});
+      });
+    }
     video.play().then(function () { sendLog('PLAYING ok'); }).catch(function (err) { sendLog('PLAY_ERROR ' + (err && err.message)); });
   }
 </script>
