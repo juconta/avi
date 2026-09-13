@@ -90,7 +90,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'La gran final del torneo. Transmisión multi-cámara: 4 lados del estadio (superior e inferior), cámaras detrás de cada arco y cámara en el oído del árbitro.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avi1/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/football.jpg',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
       scheduledAt: later,
@@ -109,7 +109,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Carrera de automovilismo con cámaras estratégicas en la pista, en cada vehículo y en el casco de los pilotos.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avif1/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/racing.jpg',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
       scheduledAt: later,
@@ -128,7 +128,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Recital en vivo con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avishow/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/concert.jpg',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
       scheduledAt: later,
@@ -146,7 +146,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Evento finalizado',
       description: 'Un evento que ya terminó, disponible para ver el relato en cámara principal.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avi2/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/basket.jpg',
       streamerId: 'admin-1',
       status: EventStatus.ENDED,
       scheduledAt: yesterday,
@@ -166,7 +166,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Partido de básquet con cámaras en los cuatro lados del estadio, sobre cada aro y en el oído de los árbitros.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avibasket/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/basket.jpg',
       streamerId: 'admin-1',
       status: EventStatus.LIVE,
       scheduledAt: later,
@@ -185,7 +185,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'La final del torneo de tenis con transmisión multi-cámara desde todos los ángulos de la cancha central.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avitenis/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/football.jpg',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
       scheduledAt: later,
@@ -202,7 +202,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Vóley playa con cámaras en los cuatro lados de la cancha y en el oído del árbitro principal.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avivoley/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/football.jpg',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
       scheduledAt: later,
@@ -219,7 +219,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Motociclismo con cámaras estratégicas en la pista, en cada moto y en el casco de los pilotos.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/avimoto/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/racing.jpg',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
       scheduledAt: later,
@@ -236,7 +236,7 @@ export class InMemoryStorage implements OnModuleInit {
       description:
         'Obra de teatro en directo con cámaras en los cuatro lados de la sala (niveles superior e inferior) y sobre el escenario.',
       price: 0,
-      coverImage: 'https://picsum.photos/seed/aviteatro/1280/720',
+      coverImage: 'https://avi-zaus.onrender.com/hls/covers/concert.jpg',
       streamerId: 'admin-1',
       status: EventStatus.SCHEDULED,
       scheduledAt: later,
@@ -252,7 +252,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Documental: La historia del streaming',
       description: 'Un documental sobre la evolución de la transmisión en vivo.',
       durationSeconds: 3600,
-      thumbUrl: 'https://picsum.photos/seed/avivod/1280/720',
+      thumbUrl: 'https://avi-zaus.onrender.com/hls/covers/concert.jpg',
       videoUrl: 'https://avi-zaus.onrender.com/hls/concert_a/index.m3u8',
       price: 0,
       createdAt: now,
@@ -263,7 +263,7 @@ export class InMemoryStorage implements OnModuleInit {
       title: 'Masterclass de producción audiovisual',
       description: 'Aprende a producir contenido audiovisual de calidad.',
       durationSeconds: 5400,
-      thumbUrl: 'https://picsum.photos/seed/avivod2/1280/720',
+      thumbUrl: 'https://avi-zaus.onrender.com/hls/covers/racing.jpg',
       videoUrl: 'https://avi-zaus.onrender.com/hls/racing_a/index.m3u8',
       price: 0,
       createdAt: now,
