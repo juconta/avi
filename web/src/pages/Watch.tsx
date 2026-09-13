@@ -76,7 +76,7 @@ export default function Watch() {
 
   const selectedCameras = cameras.filter((c) => selectedIds.includes(c.id)).slice(0, MAX_CAMERAS)
 
-  const mainUrl = selectedCameras[0]?.liveUrl ?? event.liveUrl ?? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+  const mainUrl = selectedCameras[0]?.liveUrl ?? event.liveUrl ?? 'https://avi-zaus.onrender.com/hls/football_a/index.m3u8'
   const extraCameras = selectedCameras.slice(1)
 
   const toggleCamera = (camera: CameraPosition) => {

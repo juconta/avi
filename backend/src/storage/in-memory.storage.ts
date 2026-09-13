@@ -253,7 +253,7 @@ export class InMemoryStorage implements OnModuleInit {
       description: 'Un documental sobre la evolución de la transmisión en vivo.',
       durationSeconds: 3600,
       thumbUrl: 'https://picsum.photos/seed/avivod/1280/720',
-      videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      videoUrl: 'https://avi-zaus.onrender.com/hls/concert_a/index.m3u8',
       price: 0,
       createdAt: now,
     })
@@ -264,7 +264,7 @@ export class InMemoryStorage implements OnModuleInit {
       description: 'Aprende a producir contenido audiovisual de calidad.',
       durationSeconds: 5400,
       thumbUrl: 'https://picsum.photos/seed/avivod2/1280/720',
-      videoUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      videoUrl: 'https://avi-zaus.onrender.com/hls/racing_a/index.m3u8',
       price: 0,
       createdAt: now,
     })

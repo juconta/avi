@@ -80,7 +80,7 @@ export class EventsService {
   private defaultStream(category: EventCategory, sport: string | undefined, index: number): string {
     const venue = buildVenue(category, sport)
     return venue.cameras[index % venue.cameras.length]?.liveUrl
-      ?? 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
+      ?? 'https://avi-zaus.onrender.com/hls/football_a/index.m3u8'
   }
 
   async end(id: string): Promise<Event> {

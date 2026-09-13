@@ -35,24 +35,18 @@ const CONCERT_STREAMS = [
   `${HLS_BASE}/concert_d/index.m3u8`,
 ]
 
-const FALLBACK_STREAMS = [
-  'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-  'https://test-streams.mux.dev/pts_shift/master.m3u8',
-  'https://test-streams.mux.dev/tos_ismc/main.m3u8',
-  'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
-  'https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8',
-  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8',
-]
+const FALLBACK_STREAMS = FOOTBALL_STREAMS
 
-const cameraTypesWithGoals: string[] = ['futbol', 'fútbol', 'hockey', 'handball', 'futsal', 'handbol']
+const cameraTypesWithGoals: string[] = ['futbol', 'fútbol', 'hockey', 'handball', 'futsal', 'handbol', 'tenis', 'voley', 'vóley']
 const basketballLike: string[] = ['basquet', 'básquet', 'basketball', 'baloncesto']
+const concertLike: string[] = ['concierto', 'show', 'teatro', 'ópera', 'opera']
 
 function streamsFor(category: EventCategory, sport?: string): string[] {
   const norm = (sport ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
   if (category === EventCategory.RACING) return RACING_STREAMS
   if (basketballLike.some((b) => norm.includes(b))) return BASKET_STREAMS
   if (cameraTypesWithGoals.some((g) => norm.includes(g))) return FOOTBALL_STREAMS
-  if (norm.includes('concierto') || norm.includes('show') || norm.includes('teatro')) return CONCERT_STREAMS
+  if (concertLike.some((c) => norm.includes(c))) return CONCERT_STREAMS
   return FALLBACK_STREAMS
 }
 
