@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { Event } from '../../../shared/src/types/event'
 import type { VodAsset } from '../../../shared/src/types/vod'
 import EventCard from '../components/EventCard'
 import StateHandler from '../components/StateHandler'
 import { eventsService, vodService } from '../services/data.service'
+
+const isLive = (e: Event) => e.status === 'live'
+const isUpcoming = (e: Event) => e.status === 'scheduled'
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
@@ -16,7 +20,7 @@ export default function Home() {
     setError(null)
     try {
       const [eventsData, vodsData] = await Promise.all([
-        eventsService.findUpcoming(),
+        eventsService.findAll(),
         vodService.findAll(),
       ])
       setEvents(eventsData)
@@ -32,6 +36,9 @@ export default function Home() {
     void load()
   }, [])
 
+  const liveEvents = events.filter(isLive)
+  const upcomingEvents = events.filter(isUpcoming)
+
   return (
     <div className="container">
       <section className="hero">
@@ -40,13 +47,24 @@ export default function Home() {
       </section>
 
       <StateHandler loading={loading} error={error} onRetry={load}>
+        {liveEvents.length > 0 && (
+          <section>
+            <h2 className="section-title">Ahora en vivo</h2>
+            <div className="grid">
+              {liveEvents.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          </section>
+        )}
+
         <section>
           <h2 className="section-title">Próximos eventos</h2>
-          {events.length === 0 ? (
+          {upcomingEvents.length === 0 ? (
             <p className="muted">No hay eventos próximos por ahora.</p>
           ) : (
             <div className="grid">
-              {events.map((event) => (
+              {upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </div>
@@ -57,7 +75,7 @@ export default function Home() {
           <h2 className="section-title">Disponibles en el catálogo</h2>
           <div className="grid">
             {vods.slice(0, 4).map((vod) => (
-              <a key={vod.id} href={`/vod/${vod.id}`} className="event-card">
+              <Link key={vod.id} to={`/vod/${vod.id}`} className="event-card">
                 <div className="event-card-image">
                   <img src={vod.thumbUrl} alt={vod.title} loading="lazy" />
                 </div>
@@ -65,7 +83,7 @@ export default function Home() {
                   <h3>{vod.title}</h3>
                   <p className="muted">{vod.description.slice(0, 60)}…</p>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { VodAsset } from '../../../shared/src/types/vod'
 import StateHandler from '../components/StateHandler'
 import { vodService } from '../services/data.service'
@@ -34,7 +35,7 @@ export default function VodCatalog() {
         ) : (
           <div className="grid">
             {vods.map((vod) => (
-              <a key={vod.id} href={`/vod/${vod.id}`} className="event-card">
+              <Link key={vod.id} to={`/vod/${vod.id}`} className="event-card">
                 <div className="event-card-image">
                   <img src={vod.thumbUrl} alt={vod.title} loading="lazy" />
                   {vod.price === 0 && <span className="badge badge-free">GRATIS</span>}
@@ -46,7 +47,7 @@ export default function VodCatalog() {
                     <span className="price">{formatCurrency(vod.price)}</span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         )}
