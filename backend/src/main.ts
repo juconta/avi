@@ -11,6 +11,13 @@ async function bootstrap() {
   app.setGlobalPrefix('api')
   app.enableCors({ origin: true, credentials: true })
 
+  app.use((req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store')
+    res.setHeader('Pragma', 'no-cache')
+    res.setHeader('Expires', '0')
+    next()
+  })
+
   app.useStaticAssets(join(__dirname, '..', 'public', 'hls'), {
     prefix: '/hls',
     maxAge: '0',

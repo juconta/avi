@@ -12,6 +12,10 @@ api.interceptors.request.use(async (config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  config.headers['Cache-Control'] = 'no-store'
+  if (config.method === 'get') {
+    config.params = { ...config.params, t: Date.now() }
+  }
   return config
 })
 
