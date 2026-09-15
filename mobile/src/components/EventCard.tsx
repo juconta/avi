@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: spacing.sm,
     right: spacing.sm,
-    backgroundColor: 'rgba(15,17,21,0.8)',
+    backgroundColor: 'rgba(15,21,32,0.85)',
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: spacing.sm,

@@ -102,101 +102,83 @@ export default function Watch() {
   return (
     <div className="watch-page">
       <div className="watch-main">
-        <div className="watch-grid">
-          <div className="watch-tile watch-tile-main">
-            <HlsPlayer src={mainUrl} poster={event.coverImage} />
-            <span className="watch-tile-label">{selectedCameras[0]?.label ?? 'Señal principal'}</span>
-          </div>
-          {extraCameras.map((camera) => (
-            <div key={camera.id} className="watch-tile">
-              <HlsPlayer src={camera.liveUrl} />
-              <span className="watch-tile-label">{camera.label}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="watch-info">
+        <div className="watch-header">
           <h1>{event.title}</h1>
-          <span className="badge badge-live">
-            {event.status === 'live' ? 'EN VIVO' : 'GRABADO'} · {viewers} viendo
-          </span>
+          {event.status === 'live' && (
+            <div className="watch-live-row">
+              <span className="badge badge-live">EN VIVO</span>
+              <span className="muted">{event.sport ?? ''} • {viewers.toLocaleString()} espectadores</span>
+            </div>
+          )}
         </div>
 
-        <button className="btn btn-primary" onClick={() => setSelectorOpen(true)}>
-          Cámaras ({selectedCameras.length}/{MAX_CAMERAS})
-        </button>
-      </div>
+        <p className="watch-instruction">Selecciona una cámara para tu vista virtual</p>
 
-      <div className="chat-panel">
-        <h3>Chat en vivo</h3>
-        <div className="chat-messages">
-          {messages.map((msg) => (
-            <div key={msg.id} className="chat-message">
-              <strong>{msg.userName}:</strong> {msg.text}
-            </div>
-          ))}
-          {messages.length === 0 && <p className="muted">Aún no hay mensajes.</p>}
-        </div>
-        <form className="chat-input" onSubmit={submit}>
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={user ? 'Escribe un mensaje…' : 'Inicia sesión para chatear'}
-            disabled={!user}
-            maxLength={300}
-          />
-          <button type="submit" className="btn btn-primary" disabled={!user}>
-            Enviar
-          </button>
-        </form>
-      </div>
-
-      {selectorOpen && (
-        <div className="modal-overlay" onClick={() => setSelectorOpen(false)}>
-          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Elige tus cámaras</h2>
-              <button className="btn btn-ghost" onClick={() => setSelectorOpen(false)}>
-                Listo
-              </button>
-            </div>
-            <p className="muted">
-              {event.venue.name} · {event.sport ?? ''} — toca hasta {MAX_CAMERAS} cámaras
-            </p>
-
-            <div className={`venue-map venue-map-${event.venue.kind}`}>
-              <div className="venue-silhouette">{event.venue.kind === 'track' ? 'CIRCUITO' : event.venue.kind === 'theater' ? 'ESCENARIO' : ''}</div>
-              {event.venue.cameras.map((camera) => {
-                const isSelected = selectedIds.includes(camera.id)
-                return (
-                  <button
-                    key={camera.id}
-                    className={`camera-marker${isSelected ? ' camera-marker-selected' : ''}`}
-                    style={{
-                      left: `${camera.position.x * 100}%`,
-                      top: `${camera.position.y * 100}%`,
-                      background: typeColor[camera.type] ?? 'var(--primary)',
-                    }}
-                    onClick={() => toggleCamera(camera)}
-                    title={`${camera.label} — ${camera.description}`}
-                  >
-                    {markerLabel(camera)}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div className="legend">
-              {selectedCameras.map((camera) => (
-                <div key={camera.id} className="legend-item">
-                  <span className="legend-dot" style={{ background: typeColor[camera.type] ?? 'var(--primary)' }} />
-                  {camera.label}
+        <div className="camera-grid">
+          {cameras.map((camera) => {
+            const isSelected = selectedIds.includes(camera.id)
+            return (
+              <div
+                key={camera.id}
+                className={`camera-card${isSelected ? ' camera-card-selected' : ''}`}
+                onClick={() => toggleCamera(camera)}
+              >
+                <div className="camera-card-image">
+                  <img src={event.coverImage} alt={camera.label} loading="lazy" />
+                  <span className="badge badge-live">EN VIVO</span>
+                  <span className="badge badge-4k">4K</span>
                 </div>
-              ))}
+                <div className="camera-card-body">
+                  <h3>{camera.label}</h3>
+                  <p className="muted">{camera.description}</p>
+                </div>
+                {isSelected && (
+                  <button className="btn btn-primary btn-sm camera-cta">
+                    Ver con {camera.label} — Entrar ahora
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="watch-audio-info">
+          Audio disponible: Relato • Estadio • Sin comentarios
+        </div>
+
+        {selectedCameras.length > 0 && (
+          <div className="watch-player-section">
+            <div className="watch-tile watch-tile-main">
+              <HlsPlayer src={selectedCameras[0].liveUrl} poster={event.coverImage} />
+              <span className="watch-tile-label">{selectedCameras[0].label}</span>
             </div>
           </div>
+        )}
+
+        <div className="chat-panel">
+          <h3>Chat en vivo</h3>
+          <div className="chat-messages">
+            {messages.map((msg) => (
+              <div key={msg.id} className="chat-message">
+                <strong>{msg.userName}:</strong> {msg.text}
+              </div>
+            ))}
+            {messages.length === 0 && <p className="muted">Aún no hay mensajes.</p>}
+          </div>
+          <form className="chat-input" onSubmit={submit}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={user ? 'Escribe un mensaje…' : 'Inicia sesión para chatear'}
+              disabled={!user}
+              maxLength={300}
+            />
+            <button type="submit" className="btn btn-primary" disabled={!user}>
+              Enviar
+            </button>
+          </form>
         </div>
-      )}
+      </div>
     </div>
   )
 }

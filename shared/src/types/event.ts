@@ -62,4 +62,6 @@ export interface Event {
   sport?: string
   venue: Venue
   createdAt: string
+  /** Número de espectadores en tiempo real (opcional). */
+  viewers?: number
 }

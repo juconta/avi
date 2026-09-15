@@ -6,6 +6,11 @@ import EventCard from '../components/EventCard'
 import StateHandler from '../components/StateHandler'
 import { eventsService, vodService } from '../services/data.service'
 
+function formatViewers(count: number): string {
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`
+  return count.toString()
+}
+
 const isLive = (e: Event) => e.status === 'live'
 const isUpcoming = (e: Event) => e.status === 'scheduled'
 
@@ -38,12 +43,17 @@ export default function Home() {
 
   const liveEvents = events.filter(isLive)
   const upcomingEvents = events.filter(isUpcoming)
+  const totalViewers = liveEvents.reduce((sum, e) => sum + (e.viewers ?? 0), 0)
 
   return (
     <div className="container">
       <section className="hero">
-        <h1>Vive el evento desde tu asiento</h1>
-        <p>Streaming en vivo y contenido bajo demanda con la mejor calidad.</p>
+        <div className="hero-brand">
+          <img src="/avi-logo.png" alt="AVI" className="hero-logo" />
+          <span className="hero-subtitle">Asiento Virtual Interactivo</span>
+        </div>
+        <h1>Elige tu deporte</h1>
+        <p>{events.length} eventos en vivo • Transmisión 4K HD</p>
       </section>
 
       <StateHandler loading={loading} error={error} onRetry={load}>
@@ -58,35 +68,34 @@ export default function Home() {
           </section>
         )}
 
-        <section>
-          <h2 className="section-title">Próximos eventos</h2>
-          {upcomingEvents.length === 0 ? (
-            <p className="muted">No hay eventos próximos por ahora.</p>
-          ) : (
+        {upcomingEvents.length > 0 && (
+          <section>
+            <h2 className="section-title">Próximos eventos</h2>
             <div className="grid">
               {upcomingEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
-        <section>
-          <h2 className="section-title">Disponibles en el catálogo</h2>
-          <div className="grid">
-            {vods.slice(0, 4).map((vod) => (
-              <Link key={vod.id} to={`/vod/${vod.id}`} className="event-card">
-                <div className="event-card-image">
-                  <img src={vod.thumbUrl} alt={vod.title} loading="lazy" />
-                </div>
-                <div className="event-card-body">
-                  <h3>{vod.title}</h3>
-                  <p className="muted">{vod.description.slice(0, 60)}…</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+        {vods.length > 0 && (
+          <section>
+            <h2 className="section-title">Disponibles en el catálogo</h2>
+            <div className="grid">
+              {vods.slice(0, 4).map((vod) => (
+                <Link key={vod.id} to={`/vod/${vod.id}`} className="event-card">
+                  <div className="event-card-image">
+                    <img src={vod.thumbUrl} alt={vod.title} loading="lazy" />
+                  </div>
+                  <div className="event-card-body">
+                    <h3>{vod.title}</h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </StateHandler>
     </div>
   )

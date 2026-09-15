@@ -1,12 +1,14 @@
 :root {
-  --bg: #0f1115;
-  --bg-card: #171a21;
-  --bg-input: #1f232c;
-  --border: #2a2f3a;
-  --text: #e8eaed;
-  --muted: #9aa3af;
-  --primary: #6c5ce7;
-  --primary-hover: #5a4bd4;
+  --bg: #000018;
+  --bg-card: #0f1520;
+  --bg-input: #141c2c;
+  --border: #1e2a42;
+  --text: #f0f0f0;
+  --muted: #7a8599;
+  --primary: #20b0c0;
+  --primary-hover: #18a0b0;
+  --primary-light: #30d0c0;
+  --gradient: linear-gradient(135deg, #20b0c0, #40d0c0);
   --danger: #e74c3c;
   --success: #2ecc71;
   --warning: #f1c40f;
@@ -92,12 +94,14 @@ a {
 }
 
 .btn-primary {
-  background: var(--primary);
-  color: #fff;
+  background: var(--gradient);
+  color: #000;
+  font-weight: 700;
 }
 
 .btn-primary:hover {
-  background: var(--primary-hover);
+  background: linear-gradient(135deg, #18a0b0, #30d0c0);
+  box-shadow: 0 4px 16px rgba(32, 176, 192, 0.4);
 }
 
 .btn-danger {
@@ -123,6 +127,11 @@ a {
 .btn-lg {
   padding: 0.8rem 2rem;
   font-size: 1.05rem;
+}
+
+.btn-sm {
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
 }
 
 .btn:disabled {
@@ -171,9 +180,25 @@ a {
 .hero {
   text-align: center;
   padding: 3.5rem 1rem;
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15), transparent);
+  background: linear-gradient(135deg, rgba(32, 176, 192, 0.15), transparent);
   border-radius: var(--radius);
   margin-bottom: 1rem;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.hero-logo {
+  height: 48px;
+}
+
+.hero-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .hero h1 {
@@ -230,7 +255,7 @@ a {
 }
 
 .price {
-  color: var(--primary);
+  color: var(--primary-light);
   font-weight: 700;
 }
 
@@ -241,7 +266,7 @@ a {
 .price-big {
   font-size: 1.6rem;
   font-weight: 800;
-  color: var(--primary);
+  color: var(--primary-light);
 }
 
 /* Badges */
@@ -269,6 +294,15 @@ a {
   right: 10px;
   background: var(--success);
   color: #fff;
+}
+
+.badge-viewers {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 0.7rem;
 }
 
 .badge-category {
@@ -421,7 +455,7 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--primary-light);
 }
 
 /* Alerts */
@@ -508,12 +542,104 @@ textarea:focus {
 
 /* Watch page */
 .watch-page {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 1.5rem;
   padding: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.watch-header {
+  margin-bottom: 1rem;
+}
+
+.watch-header h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.watch-live-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.watch-instruction {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.watch-audio-info {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 1.5rem 0;
+}
+
+.watch-player-section {
+  margin-bottom: 1.5rem;
+}
+
+/* Camera grid */
+.camera-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.camera-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.camera-card:hover {
+  transform: translateY(-2px);
+}
+
+.camera-card-selected {
+  border-color: var(--primary-light);
+}
+
+.camera-card-image {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--bg-input);
+}
+
+.camera-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-4k {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--primary);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.65rem;
+}
+
+.camera-card-body {
+  padding: 0.8rem;
+}
+
+.camera-card-body h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.camera-cta {
+  margin: 0 0.8rem 0.8rem;
+  width: calc(100% - 1.6rem);
 }
 
 .watch-main video {
@@ -668,7 +794,7 @@ textarea:focus {
   left: 18%;
   right: 18%;
   bottom: 18%;
-  background: rgba(108, 92, 231, 0.08);
+  background: rgba(32, 176, 192, 0.08);
 }
 
 .venue-map-theater .venue-silhouette {
@@ -676,7 +802,7 @@ textarea:focus {
   left: 15%;
   right: 15%;
   bottom: 35%;
-  background: rgba(108, 92, 231, 0.1);
+  background: rgba(32, 176, 192, 0.1);
 }
 
 .venue-map-track .venue-silhouette {
@@ -714,7 +840,7 @@ textarea:focus {
 
 .camera-marker-selected {
   border: 3px solid #fff;
-  box-shadow: 0 0 0 3px var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 .legend {

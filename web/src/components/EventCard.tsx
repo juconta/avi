@@ -8,6 +8,11 @@ const categoryLabel: Record<string, string> = {
   show: 'Espectáculo',
 }
 
+function formatViewers(count: number): string {
+  if (count >= 1000) return `${(count / 1000).toFixed(1)}k`
+  return count.toString()
+}
+
 export default function EventCard({ event }: { event: Event }) {
   const isLive = event.status === 'live'
 
@@ -16,16 +21,12 @@ export default function EventCard({ event }: { event: Event }) {
       <div className="event-card-image">
         <img src={event.coverImage} alt={event.title} loading="lazy" />
         {isLive && <span className="badge badge-live">EN VIVO</span>}
-        {event.price === 0 && <span className="badge badge-free">GRATIS</span>}
-        <span className="badge badge-category">{categoryLabel[event.category] ?? event.category}</span>
+        {isLive && event.viewers != null && event.viewers > 0 && (
+          <span className="badge badge-viewers">👁 {formatViewers(event.viewers)}</span>
+        )}
       </div>
       <div className="event-card-body">
         <h3>{event.title}</h3>
-        <p className="muted">{formatDateTime(event.scheduledAt)}</p>
-        <div className="event-card-footer">
-          <span className={event.price === 0 ? 'price price-free' : 'price'}>{event.price === 0 ? 'Gratis' : formatCurrency(event.price)}</span>
-          <span className="muted">{event.durationMinutes} min</span>
-        </div>
       </div>
     </Link>
   )

@@ -7,7 +7,8 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-brand">
-        🎥 AVI
+        <img src="/avi-logo.png" alt="AVI" style={{ height: '32px', marginRight: '8px', verticalAlign: 'middle' }} />
+        AVI
       </Link>
       <div className="navbar-links">
         <Link to="/">Inicio</Link>

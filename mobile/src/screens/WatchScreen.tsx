@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   FlatList,
+  Image,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  useWindowDimensions,
+  TouchableOpacity,
   View,
 } from 'react-native'
 import type { CameraPosition, Event } from '../../../shared/src/types/event'
 import HlsWebPlayer from '../components/HlsWebPlayer'
 import StateHandler from '../components/StateHandler'
-import VenueMap, { cameraBadgeColor } from '../components/VenueMap'
 import { useAuth } from '../context/AuthContext'
 import { eventsService, streamingService } from '../services/data.service'
 import { ChatMessage, connectSocket, disconnectSocket, sendChat } from '../services/socket'
@@ -22,18 +22,54 @@ import { colors, radius, spacing } from '../theme/colors'
 
 const MAX_CAMERAS = 4
 
-function CameraPlayer({ uri }: { uri: string }) {
+function CameraCard({
+  camera,
+  isSelected,
+  onToggle,
+  coverImage,
+}: {
+  camera: CameraPosition
+  isSelected: boolean
+  onToggle: () => void
+  coverImage?: string
+}) {
   return (
-    <View style={styles.playerBox}>
-      <HlsWebPlayer uri={uri} />
-    </View>
+    <TouchableOpacity
+      style={[styles.cameraCard, isSelected && styles.cameraCardSelected]}
+      activeOpacity={0.8}
+      onPress={onToggle}
+    >
+      <Image
+        source={{ uri: coverImage ?? camera.liveUrl }}
+        style={styles.cameraImage}
+        resizeMode="cover"
+      />
+      <View style={styles.badgeLive}>
+        <Text style={styles.badgeText}>EN VIVO</Text>
+      </View>
+      <View style={styles.badge4k}>
+        <Text style={styles.badge4kText}>4K</Text>
+      </View>
+      <View style={styles.cameraCardBody}>
+        <Text style={styles.cameraCardTitle} numberOfLines={1}>
+          {camera.label}
+        </Text>
+        <Text style={styles.cameraCardDesc} numberOfLines={1}>
+          {camera.description}
+        </Text>
+      </View>
+      {isSelected && (
+        <Pressable style={styles.ctaButton}>
+          <Text style={styles.ctaText}>Ver con {camera.label} — Entrar ahora</Text>
+        </Pressable>
+      )}
+    </TouchableOpacity>
   )
 }
 
 export default function WatchScreen({ route }: any) {
   const { id } = route.params
   const { user } = useAuth()
-  const { width } = useWindowDimensions()
 
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
@@ -42,7 +78,6 @@ export default function WatchScreen({ route }: any) {
   const [viewers, setViewers] = useState(0)
   const [input, setInput] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [selectorOpen, setSelectorOpen] = useState(false)
 
   const cameras = useMemo<CameraPosition[]>(() => event?.venue.cameras ?? [], [event])
 
@@ -95,6 +130,7 @@ export default function WatchScreen({ route }: any) {
   }
 
   const selectedCameras = cameras.filter((c) => selectedIds.includes(c.id)).slice(0, MAX_CAMERAS)
+  const mainCamera = selectedCameras[0]
 
   const submit = () => {
     if (!input.trim()) return
@@ -102,52 +138,71 @@ export default function WatchScreen({ route }: any) {
     setInput('')
   }
 
-  const isWide = selectedCameras.length > 1
-  const tileSide = isWide ? width / 2 - 1 : width
-  const tileHeight = Math.round(tileSide * (9 / 16))
+  const matchInfo = event.title
+  const viewerText = viewers > 0 ? `${viewers.toLocaleString()} espectadores` : ''
 
   return (
     <View style={styles.container}>
-      <View style={styles.videoArea}>
-        <View style={styles.videoGrid}>
-          {Array.from({ length: selectedCameras.length }).map((_, index) => (
-            <View
-              key={selectedCameras[index].id}
-              style={[isWide ? styles.tile : styles.tileSingle, { height: tileHeight }]}
-            >
-              <CameraPlayer uri={selectedCameras[index].liveUrl} />              <View style={styles.cameraTag}>
-                <Text style={styles.cameraTagText}>{selectedCameras[index].label}</Text>
+      <ScrollView style={styles.scrollArea}>
+        <View style={styles.headerSection}>
+          <Text style={styles.eventTitle}>{matchInfo}</Text>
+          {event.status === 'live' && (
+            <View style={styles.liveRow}>
+              <View style={styles.badgeLiveLarge}>
+                <Text style={styles.badgeText}>EN VIVO</Text>
               </View>
+              <Text style={styles.liveInfo}>
+                {event.sport ?? ''} • {viewerText}
+              </Text>
             </View>
+          )}
+        </View>
+
+        <View style={styles.instructionSection}>
+          <Text style={styles.instruction}>Selecciona una cámara para tu vista virtual</Text>
+        </View>
+
+        <View style={styles.cameraGrid}>
+          {cameras.map((camera) => (
+            <CameraCard
+              key={camera.id}
+              camera={camera}
+              isSelected={selectedIds.includes(camera.id)}
+              onToggle={() => toggleCamera(camera)}
+              coverImage={event.coverImage}
+            />
           ))}
         </View>
 
-        <Pressable style={styles.camerasButton} onPress={() => setSelectorOpen(true)}>
-          <Text style={styles.camerasButtonText}>
-            Cámaras ({selectedCameras.length}/{MAX_CAMERAS})
-          </Text>
-        </Pressable>
-      </View>
+        <View style={styles.audioSection}>
+          <Text style={styles.audioLabel}>Audio disponible: Relato • Estadio • Sin comentarios</Text>
+        </View>
 
-      <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>{event.title}</Text>
-        <Text style={styles.viewers}>{viewers} viendo</Text>
-      </View>
-
-      <FlatList
-        data={messages}
-        keyExtractor={(item) => item.id}
-        style={styles.chat}
-        renderItem={({ item }) => (
-          <View style={styles.message}>
-            <Text style={styles.messageText}>
-              <Text style={styles.messageUser}>{item.userName}: </Text>
-              {item.text}
-            </Text>
+        {mainCamera && (
+          <View style={styles.playerSection}>
+            <HlsWebPlayer uri={mainCamera.liveUrl} />
+            <View style={styles.playerTag}>
+              <Text style={styles.playerTagText}>{mainCamera.label}</Text>
+            </View>
           </View>
         )}
-        ListEmptyComponent={<Text style={styles.emptyChat}>Aún no hay mensajes.</Text>}
-      />
+
+        <View style={styles.chatSection}>
+          <Text style={styles.chatTitle}>Chat en vivo</Text>
+          {messages.length === 0 ? (
+            <Text style={styles.emptyChat}>Aún no hay mensajes.</Text>
+          ) : (
+            messages.map((msg) => (
+              <View key={msg.id} style={styles.message}>
+                <Text style={styles.messageText}>
+                  <Text style={styles.messageUser}>{msg.userName}: </Text>
+                  {msg.text}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
+      </ScrollView>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={styles.inputRow}>
@@ -165,32 +220,6 @@ export default function WatchScreen({ route }: any) {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-
-      <Modal visible={selectorOpen} animationType="slide" transparent onRequestClose={() => setSelectorOpen(false)}>
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modal}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Elige tus cámaras</Text>
-              <Pressable onPress={() => setSelectorOpen(false)}>
-                <Text style={styles.modalClose}>Listo</Text>
-              </Pressable>
-            </View>
-
-            <Text style={styles.venueName}>{event.venue.name} · {event.sport ?? ''}</Text>
-
-            <VenueMap venue={event.venue} selectedIds={selectedIds} onToggle={toggleCamera} maxSelectable={MAX_CAMERAS} />
-
-            <View style={styles.legend}>
-              {selectedCameras.map((camera) => (
-                <View key={camera.id} style={styles.legendItem}>
-                  <View style={[styles.legendDot, { backgroundColor: cameraBadgeColor(camera.type) }]} />
-                  <Text style={styles.legendText}>{camera.label}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   )
 }
@@ -200,82 +229,161 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  videoArea: {
-    backgroundColor: colors.black,
-    paddingTop: Platform.OS === 'android' ? 8 : 0,
+  scrollArea: {
+    flex: 1,
   },
-  videoGrid: {
-    width: '100%',
+  headerSection: {
+    padding: spacing.md,
+  },
+  eventTitle: {
+    color: colors.text,
+    fontSize: 22,
+    fontWeight: '800',
+    marginBottom: spacing.sm,
+  },
+  liveRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  badgeLiveLarge: {
+    backgroundColor: colors.danger,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+  },
+  liveInfo: {
+    color: colors.muted,
+    fontSize: 13,
+  },
+  instructionSection: {
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
+  },
+  instruction: {
+    color: colors.muted,
+    fontSize: 14,
+  },
+  cameraGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
   },
-  tile: {
-    width: '50%',
-    padding: 1,
-    backgroundColor: colors.black,
+  cameraCard: {
+    width: '48%',
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: spacing.sm,
   },
-  tileSingle: {
+  cameraCardSelected: {
+    borderColor: colors.primary,
+    borderWidth: 2,
+  },
+  cameraImage: {
     width: '100%',
-    backgroundColor: colors.black,
+    aspectRatio: 16 / 10,
+    backgroundColor: colors.input,
   },
-  playerBox: {
-    flex: 1,
-    width: '100%',
-    minHeight: 180,
-    backgroundColor: colors.black,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cameraTag: {
+  badgeLive: {
     position: 'absolute',
-    top: 6,
-    left: 6,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    borderRadius: radius.sm,
-    paddingHorizontal: 6,
+    top: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: colors.danger,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 2,
+    borderRadius: radius.sm,
   },
-  cameraTagText: {
+  badge4k: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+  },
+  badge4kText: {
+    color: colors.black,
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  badgeText: {
     color: colors.white,
     fontSize: 10,
     fontWeight: '700',
   },
-  camerasButton: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: colors.primary,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 8,
+  cameraCardBody: {
+    padding: spacing.sm,
   },
-  camerasButtonText: {
-    color: colors.white,
+  cameraCardTitle: {
+    color: colors.text,
+    fontSize: 14,
     fontWeight: '700',
-    fontSize: 13,
+    marginBottom: 2,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  cameraCardDesc: {
+    color: colors.muted,
+    fontSize: 12,
+  },
+  ctaButton: {
+    backgroundColor: colors.primary,
+    marginHorizontal: spacing.sm,
+    marginBottom: spacing.sm,
+    borderRadius: radius.sm,
+    paddingVertical: 8,
     alignItems: 'center',
-    padding: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
-  title: {
+  ctaText: {
+    color: colors.black,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  audioSection: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  audioLabel: {
+    color: colors.muted,
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  playerSection: {
+    backgroundColor: colors.black,
+    marginHorizontal: spacing.md,
+    borderRadius: radius.md,
+    overflow: 'hidden',
+    marginBottom: spacing.md,
+  },
+  playerTag: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: radius.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  playerTagText: {
+    color: colors.white,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  chatSection: {
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  chatTitle: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '700',
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  viewers: {
-    color: colors.muted,
-    fontSize: 13,
-  },
-  chat: {
-    flex: 1,
-    padding: spacing.md,
+    marginBottom: spacing.sm,
   },
   message: {
     backgroundColor: colors.card,
@@ -302,6 +410,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     borderTopWidth: 1,
     borderTopColor: colors.border,
+    backgroundColor: colors.card,
     gap: spacing.sm,
   },
   input: {
@@ -321,58 +430,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   sendText: {
-    color: colors.white,
+    color: colors.black,
     fontWeight: '700',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'flex-end',
-  },
-  modal: {
-    backgroundColor: colors.card,
-    borderTopLeftRadius: radius.lg,
-    borderTopRightRadius: radius.lg,
-    padding: spacing.md,
-    paddingBottom: spacing.xl,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  modalTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  modalClose: {
-    color: colors.primary,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  venueName: {
-    color: colors.muted,
-    fontSize: 13,
-    marginBottom: spacing.md,
-  },
-  legend: {
-    marginTop: spacing.md,
-    gap: spacing.sm,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    color: colors.text,
-    fontSize: 13,
   },
 })

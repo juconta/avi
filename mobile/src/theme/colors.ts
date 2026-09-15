@@ -1,12 +1,13 @@
 export const colors = {
-  bg: '#0f1115',
-  card: '#171a21',
-  input: '#1f232c',
-  border: '#2a2f3a',
-  text: '#e8eaed',
-  muted: '#9aa3af',
-  primary: '#6c5ce7',
-  primaryDark: '#5a4bd4',
+  bg: '#000018',
+  card: '#0f1520',
+  input: '#141c2c',
+  border: '#1e2a42',
+  text: '#f0f0f0',
+  muted: '#7a8599',
+  primary: '#20b0c0',
+  primaryDark: '#18a0b0',
+  primaryLight: '#30d0c0',
   danger: '#e74c3c',
   success: '#2ecc71',
   warning: '#f1c40f',
@@ -20,10 +21,17 @@ export const spacing = {
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 48,
 }
 
 export const radius = {
   sm: 6,
   md: 10,
   lg: 16,
+  full: 999,
+}
+
+export const gradient = {
+  primary: ['#20b0c0', '#40d0c0'],
+  dark: ['#000018', '#0f1520'],
 }

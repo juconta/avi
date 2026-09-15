@@ -41,9 +41,9 @@ function HomeTabs() {
         tabBarInactiveTintColor: colors.muted,
       }}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Eventos' }} />
-      <Tab.Screen name="Catalog" component={VodCatalogScreen} options={{ title: 'Catálogo' }} />
-      <Tab.Screen name="Purchases" component={MyEventsScreen} options={{ title: 'Mis eventos' }} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Inicio' }} />
+      <Tab.Screen name="Live" component={VodCatalogScreen} options={{ title: 'Live' }} />
+      <Tab.Screen name="Favoritos" component={MyEventsScreen} options={{ title: 'Favoritos' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Perfil' }} />
     </Tab.Navigator>
   )
