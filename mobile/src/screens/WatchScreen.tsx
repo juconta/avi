@@ -159,7 +159,16 @@ export default function WatchScreen({ route }: any) {
         </View>
 
         <View style={styles.instructionSection}>
-          <Text style={styles.instruction}>Selecciona una cámara para tu vista virtual</Text>
+          <Text style={styles.instruction}>
+            Elegí hasta {MAX_CAMERAS} cámaras para armar tu vista virtual
+          </Text>
+          {selectedCameras.length > 0 && (
+            <View style={styles.selectedCount}>
+              <Text style={styles.selectedCountText}>
+                {selectedCameras.length}/{MAX_CAMERAS} activas
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.cameraGrid}>
@@ -180,10 +189,24 @@ export default function WatchScreen({ route }: any) {
 
         {mainCamera && (
           <View style={styles.playerSection}>
-            <HlsWebPlayer uri={mainCamera.liveUrl} />
-            <View style={styles.playerTag}>
-              <Text style={styles.playerTagText}>{mainCamera.label}</Text>
+            <View style={styles.playerMain}>
+              <HlsWebPlayer uri={mainCamera.liveUrl} />
+              <View style={styles.playerTag}>
+                <Text style={styles.playerTagText}>{mainCamera.label}</Text>
+              </View>
             </View>
+            {selectedCameras.length > 1 && (
+              <View style={styles.pipRow}>
+                {selectedCameras.slice(1).map((camera) => (
+                  <View key={camera.id} style={styles.pipTile}>
+                    <HlsWebPlayer uri={camera.liveUrl} />
+                    <View style={styles.playerTag}>
+                      <Text style={styles.playerTagText}>{camera.label}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
         )}
 
@@ -263,6 +286,21 @@ const styles = StyleSheet.create({
   instruction: {
     color: colors.muted,
     fontSize: 14,
+  },
+  selectedCount: {
+    alignSelf: 'flex-start',
+    marginTop: spacing.xs,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
+  selectedCountText: {
+    color: colors.primaryLight,
+    fontSize: 12,
+    fontWeight: '700',
   },
   cameraGrid: {
     flexDirection: 'row',
@@ -359,6 +397,25 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     overflow: 'hidden',
     marginBottom: spacing.md,
+  },
+  playerMain: {
+    height: 210,
+    width: '100%',
+    backgroundColor: colors.black,
+  },
+  pipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    padding: spacing.xs,
+    backgroundColor: colors.black,
+  },
+  pipTile: {
+    width: '49%',
+    height: 110,
+    backgroundColor: colors.black,
+    borderRadius: radius.sm,
+    overflow: 'hidden',
   },
   playerTag: {
     position: 'absolute',

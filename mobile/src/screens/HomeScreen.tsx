@@ -5,7 +5,13 @@ import StateHandler from '../components/StateHandler'
 import { eventsService } from '../services/data.service'
 import { sendDebugLog } from '../services/debug'
 import { colors, radius, spacing } from '../theme/colors'
-import { formatViewers } from '../utils/format'
+import { formatCurrency, formatViewers } from '../utils/format'
+
+const categoryLabel: Record<string, string> = {
+  sport: 'Deporte',
+  racing: 'Automovilismo',
+  show: 'Espectáculo',
+}
 
 export default function HomeScreen({ navigation }: any) {
   const [events, setEvents] = useState<Event[]>([])
@@ -55,8 +61,19 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.badgeViewersText}>👁 {formatViewers(item.viewers)}</Text>
           </View>
         )}
+        {item.category && (
+          <View style={styles.badgeCategory}>
+            <Text style={styles.badgeText}>{categoryLabel[item.category] ?? item.category}</Text>
+          </View>
+        )}
         <View style={styles.cardBody}>
           <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+          <View style={styles.cardFooter}>
+            <Text style={item.price > 0 ? styles.cardPrice : styles.cardFree}>
+              {item.price > 0 ? formatCurrency(item.price) : 'Gratis'}
+            </Text>
+            <Text style={styles.cardCams}>🎥 {item.venue.cameras.length} cámaras</Text>
+          </View>
         </View>
       </TouchableOpacity>
     )
@@ -73,8 +90,31 @@ export default function HomeScreen({ navigation }: any) {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.title}>Elige tu deporte</Text>
-            <Text style={styles.subtitle}>{events.length} eventos en vivo • Transmisión 4K HD</Text>
+            <Text style={styles.title}>Viví el partido desde tu propia visión</Text>
+            <Text style={styles.subtitle}>Multi-cámara, 4K y chat en vivo</Text>
+            <View style={styles.statsRow}>
+              <View style={styles.stat}>
+                <Text style={styles.statValue}>{liveEvents.length}</Text>
+                <Text style={styles.statLabel}>en vivo</Text>
+              </View>
+              <View style={styles.stat}>
+                <Text style={styles.statValue}>{formatViewers(viewerCount)}</Text>
+                <Text style={styles.statLabel}>espectadores</Text>
+              </View>
+              <View style={styles.stat}>
+                <Text style={styles.statValue}>{events.length}</Text>
+                <Text style={styles.statLabel}>eventos</Text>
+              </View>
+            </View>
+            {liveEvents[0] && (
+              <TouchableOpacity
+                style={styles.cta}
+                activeOpacity={0.85}
+                onPress={() => navigation.navigate('Watch', { id: liveEvents[0].id })}
+              >
+                <Text style={styles.ctaText}>Ver en vivo ahora</Text>
+              </TouchableOpacity>
+            )}
           </View>
         }
         ListEmptyComponent={<Text style={styles.empty}>No hay eventos disponibles.</Text>}
@@ -100,6 +140,43 @@ const styles = StyleSheet.create({
   subtitle: {
     color: colors.muted,
     marginTop: 2,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  stat: {
+    flex: 1,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    alignItems: 'center',
+  },
+  statValue: {
+    color: colors.primaryLight,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  statLabel: {
+    color: colors.muted,
+    fontSize: 11,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  cta: {
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  ctaText: {
+    color: colors.black,
+    fontSize: 15,
+    fontWeight: '800',
   },
   row: {
     justifyContent: 'space-between',
@@ -137,6 +214,17 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: radius.sm,
   },
+  badgeCategory: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(15,21,32,0.85)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: radius.sm,
+  },
   badgeViewersText: {
     color: colors.white,
     fontSize: 10,
@@ -154,6 +242,27 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
     fontWeight: '700',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.xs,
+  },
+  cardPrice: {
+    color: colors.primaryLight,
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  cardFree: {
+    color: colors.success,
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  cardCams: {
+    color: colors.muted,
+    fontSize: 11,
+    fontWeight: '600',
   },
   empty: {
     color: colors.muted,
