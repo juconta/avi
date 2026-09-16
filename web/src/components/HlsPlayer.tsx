@@ -5,9 +5,10 @@ interface Props {
   src: string
   poster?: string
   autoPlay?: boolean
+  muted?: boolean
 }
 
-export default function HlsPlayer({ src, poster, autoPlay = true }: Props) {
+export default function HlsPlayer({ src, poster, autoPlay = true, muted = false }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function HlsPlayer({ src, poster, autoPlay = true }: Props) {
       ref={videoRef}
       controls
       autoPlay={autoPlay}
+      muted={muted}
       poster={poster}
       playsInline
       style={{ width: '100%', borderRadius: 8, backgroundColor: '#000' }}

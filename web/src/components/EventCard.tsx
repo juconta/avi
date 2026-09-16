@@ -24,9 +24,18 @@ export default function EventCard({ event }: { event: Event }) {
         {isLive && event.viewers != null && event.viewers > 0 && (
           <span className="badge badge-viewers">👁 {formatViewers(event.viewers)}</span>
         )}
+        {event.category && (
+          <span className="badge badge-category">{categoryLabel[event.category] ?? event.category}</span>
+        )}
       </div>
       <div className="event-card-body">
         <h3>{event.title}</h3>
+        <div className="event-card-footer">
+          <span className={event.price > 0 ? 'price' : 'price price-free'}>
+            {event.price > 0 ? formatCurrency(event.price) : 'Gratis'}
+          </span>
+          <span className="event-card-cams">🎥 {event.venue.cameras.length} cámaras</span>
+        </div>
       </div>
     </Link>
   )

@@ -9,17 +9,6 @@ import { useAuth } from '../hooks/useAuth'
 
 const MAX_CAMERAS = 4
 
-const typeColor: Record<string, string> = {
-  side: 'var(--primary)',
-  goal: 'var(--warning)',
-  hoop: 'var(--warning)',
-  referee: 'var(--success)',
-  track: 'var(--danger)',
-  vehicle: 'var(--danger)',
-  driver: 'var(--danger)',
-  stage: 'var(--primary)',
-}
-
 export default function Watch() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuth()
@@ -87,11 +76,6 @@ export default function Watch() {
     })
   }
 
-  const markerLabel = (camera: CameraPosition) => {
-    const parts = camera.label.split(' ').filter((p) => p.length > 2)
-    return (parts.slice(0, 2).join(' ') || camera.label.slice(0, 2)).slice(0, 12)
-  }
-
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim()) return
@@ -112,7 +96,14 @@ export default function Watch() {
           )}
         </div>
 
-        <p className="watch-instruction">Selecciona una cámara para tu vista virtual</p>
+        <p className="watch-instruction">
+          Elegí hasta {MAX_CAMERAS} cámaras para armar tu vista virtual
+          {selectedCameras.length > 0 && (
+            <span className="watch-selected-count">
+              {selectedCameras.length}/{MAX_CAMERAS} activas
+            </span>
+          )}
+        </p>
 
         <div className="camera-grid">
           {cameras.map((camera) => {
@@ -148,9 +139,17 @@ export default function Watch() {
 
         {selectedCameras.length > 0 && (
           <div className="watch-player-section">
-            <div className="watch-tile watch-tile-main">
-              <HlsPlayer src={selectedCameras[0].liveUrl} poster={event.coverImage} />
-              <span className="watch-tile-label">{selectedCameras[0].label}</span>
+            <div className={`watch-grid${selectedCameras.length > 1 ? ' watch-grid-multi' : ''}`}>
+              <div className="watch-tile watch-tile-main">
+                <HlsPlayer src={mainUrl} poster={event.coverImage} />
+                <span className="watch-tile-label">{selectedCameras[0].label}</span>
+              </div>
+              {extraCameras.map((camera) => (
+                <div key={camera.id} className="watch-tile">
+                  <HlsPlayer src={camera.liveUrl} poster={event.coverImage} muted />
+                  <span className="watch-tile-label">{camera.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

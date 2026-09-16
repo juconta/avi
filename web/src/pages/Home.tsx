@@ -52,8 +52,29 @@ export default function Home() {
           <img src="/avi-logo.png" alt="AVI" className="hero-logo" />
           <span className="hero-subtitle">Asiento Virtual Interactivo</span>
         </div>
-        <h1>Elige tu deporte</h1>
-        <p>{events.length} eventos en vivo • Transmisión 4K HD</p>
+        <h1>Viví el partido desde tu propia visión</h1>
+        <p>
+          Elegí entre múltiples cámaras, transmisión 4K y chat en vivo desde cualquier dispositivo.
+        </p>
+        <div className="hero-stats">
+          <div className="hero-stat">
+            <strong>{liveEvents.length}</strong>
+            <span>en vivo</span>
+          </div>
+          <div className="hero-stat">
+            <strong>{formatViewers(totalViewers)}</strong>
+            <span>espectadores</span>
+          </div>
+          <div className="hero-stat">
+            <strong>{events.length}</strong>
+            <span>eventos</span>
+          </div>
+        </div>
+        {liveEvents[0] && (
+          <Link to={`/watch/${liveEvents[0].id}`} className="btn btn-primary btn-lg hero-cta">
+            Ver en vivo ahora
+          </Link>
+        )}
       </section>
 
       <StateHandler loading={loading} error={error} onRetry={load}>
