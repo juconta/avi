@@ -1,9 +1,13 @@
-import { useRef } from 'react'
+import { forwardRef, useImperativeHandle, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { API_URL } from '../config'
 
-const buildHtml = (logUrl: string) => `
+export type HlsWebPlayerHandle = {
+  setMuted: (muted: boolean) => void
+}
+
+const buildHtml = (logUrl: string, muted: boolean) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +19,7 @@ const buildHtml = (logUrl: string) => `
 </style>
 </head>
 <body>
-<video id="v" muted playsinline autoplay preload="auto" controls></video>
+<video id="v" ${muted ? 'muted' : ''} playsinline autoplay preload="auto" controls></video>
 <script>
   var video = document.getElementById('v');
   var hls = null;
@@ -68,16 +72,28 @@ const buildHtml = (logUrl: string) => `
 
 interface Props {
   uri: string
+  muted?: boolean
 }
 
-export default function HlsWebPlayer({ uri }: Props) {
+const HlsWebPlayer = forwardRef<HlsWebPlayerHandle, Props>(function HlsWebPlayer(
+  { uri, muted = true },
+  ref,
+) {
   const webRef = useRef<WebView>(null)
+
+  useImperativeHandle(ref, () => ({
+    setMuted: (next: boolean) => {
+      webRef.current?.injectJavaScript(
+        `(function(){ var v=document.getElementById('v'); if(v){ v.muted=${next}; v.play().catch(function(){}); } })(); true;`,
+      )
+    },
+  }))
 
   return (
     <View style={styles.root}>
       <WebView
         ref={webRef}
-        source={{ html: buildHtml(API_URL) }}
+        source={{ html: buildHtml(API_URL, muted) }}
         style={styles.web}
         originWhitelist={['*']}
         javaScriptEnabled
@@ -91,7 +107,9 @@ export default function HlsWebPlayer({ uri }: Props) {
       />
     </View>
   )
-}
+})
+
+export default HlsWebPlayer
 
 const styles = StyleSheet.create({
   root: {

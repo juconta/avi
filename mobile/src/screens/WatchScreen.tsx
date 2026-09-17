@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   Image,
@@ -13,7 +13,7 @@ import {
   View,
 } from 'react-native'
 import type { CameraPosition, Event } from '../../../shared/src/types/event'
-import HlsWebPlayer from '../components/HlsWebPlayer'
+import HlsWebPlayer, { HlsWebPlayerHandle } from '../components/HlsWebPlayer'
 import StateHandler from '../components/StateHandler'
 import { useAuth } from '../context/AuthContext'
 import { eventsService, streamingService } from '../services/data.service'
@@ -78,6 +78,8 @@ export default function WatchScreen({ route }: any) {
   const [viewers, setViewers] = useState(0)
   const [input, setInput] = useState('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [mainMuted, setMainMuted] = useState(false)
+  const mainPlayerRef = useRef<HlsWebPlayerHandle>(null)
 
   const cameras = useMemo<CameraPosition[]>(() => event?.venue.cameras ?? [], [event])
 
@@ -122,6 +124,14 @@ export default function WatchScreen({ route }: any) {
       if (prev.includes(camera.id)) return prev.filter((id) => id !== camera.id)
       if (prev.length >= MAX_CAMERAS) return prev
       return [...prev, camera.id]
+    })
+  }
+
+  const toggleMute = () => {
+    setMainMuted((prev) => {
+      const next = !prev
+      mainPlayerRef.current?.setMuted(next)
+      return next
     })
   }
 
@@ -171,29 +181,18 @@ export default function WatchScreen({ route }: any) {
           )}
         </View>
 
-        <View style={styles.cameraGrid}>
-          {cameras.map((camera) => (
-            <CameraCard
-              key={camera.id}
-              camera={camera}
-              isSelected={selectedIds.includes(camera.id)}
-              onToggle={() => toggleCamera(camera)}
-              coverImage={event.coverImage}
-            />
-          ))}
-        </View>
-
-        <View style={styles.audioSection}>
-          <Text style={styles.audioLabel}>Audio disponible: Relato • Estadio • Sin comentarios</Text>
-        </View>
-
         {mainCamera && (
           <View style={styles.playerSection}>
             <View style={styles.playerMain}>
-              <HlsWebPlayer uri={mainCamera.liveUrl} />
+              <HlsWebPlayer ref={mainPlayerRef} uri={mainCamera.liveUrl} muted={mainMuted} />
               <View style={styles.playerTag}>
                 <Text style={styles.playerTagText}>{mainCamera.label}</Text>
               </View>
+              <Pressable style={styles.muteButton} onPress={toggleMute}>
+                <Text style={styles.muteButtonText}>
+                  {mainMuted ? 'Activar sonido' : 'Silenciar'}
+                </Text>
+              </Pressable>
             </View>
             {selectedCameras.length > 1 && (
               <View style={styles.pipRow}>
@@ -209,6 +208,22 @@ export default function WatchScreen({ route }: any) {
             )}
           </View>
         )}
+
+        <View style={styles.cameraGrid}>
+          {cameras.map((camera) => (
+            <CameraCard
+              key={camera.id}
+              camera={camera}
+              isSelected={selectedIds.includes(camera.id)}
+              onToggle={() => toggleCamera(camera)}
+              coverImage={event.coverImage}
+            />
+          ))}
+        </View>
+
+        <View style={styles.audioSection}>
+          <Text style={styles.audioLabel}>Audio disponible: Relato • Estadio • Sin comentarios</Text>
+        </View>
 
         <View style={styles.chatSection}>
           <Text style={styles.chatTitle}>Chat en vivo</Text>
@@ -429,6 +444,23 @@ const styles = StyleSheet.create({
   playerTagText: {
     color: colors.white,
     fontSize: 11,
+    fontWeight: '700',
+  },
+  muteButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.full,
+    paddingHorizontal: spacing.md,
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  muteButtonText: {
+    color: colors.white,
+    fontSize: 12,
     fontWeight: '700',
   },
   chatSection: {
