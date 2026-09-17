@@ -7,7 +7,7 @@ export type HlsWebPlayerHandle = {
   setMuted: (muted: boolean) => void
 }
 
-const buildHtml = (logUrl: string, muted: boolean) => `
+const buildHtml = (logUrl: string, muted: boolean, poster: string) => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +19,7 @@ const buildHtml = (logUrl: string, muted: boolean) => `
 </style>
 </head>
 <body>
-<video id="v" ${muted ? 'muted' : ''} playsinline autoplay preload="auto" controls></video>
+<video id="v" ${muted ? 'muted' : ''} playsinline autoplay preload="auto" controls${poster ? ` poster="${poster}"` : ''}></video>
 <script>
   var video = document.getElementById('v');
   var hls = null;
@@ -73,10 +73,11 @@ const buildHtml = (logUrl: string, muted: boolean) => `
 interface Props {
   uri: string
   muted?: boolean
+  poster?: string
 }
 
 const HlsWebPlayer = forwardRef<HlsWebPlayerHandle, Props>(function HlsWebPlayer(
-  { uri, muted = true },
+  { uri, muted = true, poster },
   ref,
 ) {
   const webRef = useRef<WebView>(null)
@@ -97,7 +98,7 @@ const HlsWebPlayer = forwardRef<HlsWebPlayerHandle, Props>(function HlsWebPlayer
     <View style={styles.root}>
       <WebView
         ref={webRef}
-        source={{ html: buildHtml(API_URL, muted) }}
+        source={{ html: buildHtml(API_URL, muted, poster ?? '') }}
         style={styles.web}
         originWhitelist={['*']}
         javaScriptEnabled

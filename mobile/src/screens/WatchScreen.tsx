@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  FlatList,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -91,6 +90,7 @@ export default function WatchScreen({ route }: any) {
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [mainMuted, setMainMuted] = useState(false)
   const mainPlayerRef = useRef<HlsWebPlayerHandle>(null)
+  const chatScrollRef = useRef<ScrollView>(null)
 
   const cameras = useMemo<CameraPosition[]>(() => event?.venue.cameras ?? [], [event])
 
@@ -168,7 +168,9 @@ export default function WatchScreen({ route }: any) {
   }
 
   const matchInfo = event.title
-  const viewerText = viewers > 0 ? `${viewers.toLocaleString()} espectadores` : ''
+  const liveInfo = [event.sport, viewers > 0 ? `${viewers.toLocaleString()} espectadores` : '']
+    .filter(Boolean)
+    .join(' • ')
 
   return (
     <View style={styles.container}>
@@ -180,9 +182,7 @@ export default function WatchScreen({ route }: any) {
               <View style={styles.badgeLiveLarge}>
                 <Text style={styles.badgeText}>EN VIVO</Text>
               </View>
-              <Text style={styles.liveInfo}>
-                {event.sport ?? ''} • {viewerText}
-              </Text>
+              <Text style={styles.liveInfo}>{liveInfo}</Text>
             </View>
           )}
         </View>
@@ -203,7 +203,7 @@ export default function WatchScreen({ route }: any) {
         {mainCamera && (
           <View style={styles.playerSection}>
             <View style={styles.playerMain}>
-              <HlsWebPlayer ref={mainPlayerRef} uri={mainCamera.liveUrl} muted={mainMuted} />
+              <HlsWebPlayer ref={mainPlayerRef} uri={mainCamera.liveUrl} muted={mainMuted} poster={event.coverImage} />
               <View style={styles.playerTag}>
                 <Text style={styles.playerTagText}>{mainCamera.label}</Text>
               </View>
@@ -248,18 +248,25 @@ export default function WatchScreen({ route }: any) {
 
         <View style={styles.chatSection}>
           <Text style={styles.chatTitle}>Chat en vivo</Text>
-          {messages.length === 0 ? (
-            <Text style={styles.emptyChat}>Aún no hay mensajes.</Text>
-          ) : (
-            messages.map((msg) => (
-              <View key={msg.id} style={styles.message}>
-                <Text style={styles.messageText}>
-                  <Text style={styles.messageUser}>{msg.userName}: </Text>
-                  {msg.text}
-                </Text>
-              </View>
-            ))
-          )}
+          <ScrollView
+            ref={chatScrollRef}
+            style={styles.chatScroll}
+            contentContainerStyle={styles.chatContent}
+            onContentSizeChange={() => chatScrollRef.current?.scrollToEnd({ animated: true })}
+          >
+            {messages.length === 0 ? (
+              <Text style={styles.emptyChat}>Aún no hay mensajes.</Text>
+            ) : (
+              messages.map((msg) => (
+                <View key={msg.id} style={styles.message}>
+                  <Text style={styles.messageText}>
+                    <Text style={styles.messageUser}>{msg.userName}: </Text>
+                    {msg.text}
+                  </Text>
+                </View>
+              ))
+            )}
+          </ScrollView>
         </View>
       </ScrollView>
 
@@ -502,6 +509,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginBottom: spacing.sm,
+  },
+  chatScroll: {
+    maxHeight: 220,
+  },
+  chatContent: {
+    paddingBottom: spacing.sm,
   },
   message: {
     backgroundColor: colors.card,
