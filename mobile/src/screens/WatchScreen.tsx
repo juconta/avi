@@ -21,6 +21,7 @@ import { ChatMessage, connectSocket, disconnectSocket, sendChat } from '../servi
 import { colors, radius, spacing } from '../theme/colors'
 
 const MAX_CAMERAS = 4
+const DEFAULT_HLS = 'https://avi-zaus.onrender.com/hls/football_a/index.m3u8'
 
 function CameraCard({
   camera,
@@ -43,11 +44,15 @@ function CameraCard({
       activeOpacity={0.8}
       onPress={onToggle}
     >
-      <Image
-        source={{ uri: coverImage ?? camera.liveUrl }}
-        style={styles.cameraImage}
-        resizeMode="cover"
-      />
+      {coverImage ? (
+        <Image
+          source={{ uri: coverImage }}
+          style={styles.cameraImage}
+          resizeMode="cover"
+        />
+      ) : (
+        <View style={styles.cameraImage} />
+      )}
       <View style={styles.badgeLive}>
         <Text style={styles.badgeText}>EN VIVO</Text>
       </View>
@@ -160,6 +165,7 @@ export default function WatchScreen({ route }: any) {
 
   const selectedCameras = cameras.filter((c) => selectedIds.includes(c.id)).slice(0, MAX_CAMERAS)
   const mainCamera = selectedCameras[0]
+  const mainUrl = mainCamera?.liveUrl || event.liveUrl || DEFAULT_HLS
 
   const submit = () => {
     if (!input.trim()) return
@@ -203,7 +209,7 @@ export default function WatchScreen({ route }: any) {
         {mainCamera && (
           <View style={styles.playerSection}>
             <View style={styles.playerMain}>
-              <HlsWebPlayer ref={mainPlayerRef} uri={mainCamera.liveUrl} muted={mainMuted} poster={event.coverImage} />
+              <HlsWebPlayer ref={mainPlayerRef} uri={mainUrl} muted={mainMuted} poster={event.coverImage} />
               <View style={styles.playerTag}>
                 <Text style={styles.playerTagText}>{mainCamera.label}</Text>
               </View>
