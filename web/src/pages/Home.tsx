@@ -50,7 +50,6 @@ export default function Home() {
       <section className="hero">
         <div className="hero-brand">
           <img src="/avi-logo-titulo.png" alt="AVI" className="hero-logo" />
-          <span className="hero-subtitle">Asiento Virtual Interactivo</span>
         </div>
         <h1>Viví el partido desde tu propia visión</h1>
         <p>
