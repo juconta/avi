@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { WebView } from 'react-native-webview'
 import { API_URL } from '../config'
@@ -88,6 +88,10 @@ const HlsWebPlayer = forwardRef<HlsWebPlayerHandle, Props>(function HlsWebPlayer
       )
     },
   }))
+
+  useEffect(() => {
+    webRef.current?.injectJavaScript(`init(${JSON.stringify(uri)}); true;`)
+  }, [uri])
 
   return (
     <View style={styles.root}>

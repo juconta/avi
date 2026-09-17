@@ -11,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Vibration,
 } from 'react-native'
 import type { CameraPosition, Event } from '../../../shared/src/types/event'
 import HlsWebPlayer, { HlsWebPlayerHandle } from '../components/HlsWebPlayer'
@@ -25,12 +26,16 @@ const MAX_CAMERAS = 4
 function CameraCard({
   camera,
   isSelected,
+  isMain,
   onToggle,
+  onPrimary,
   coverImage,
 }: {
   camera: CameraPosition
   isSelected: boolean
+  isMain: boolean
   onToggle: () => void
+  onPrimary: () => void
   coverImage?: string
 }) {
   return (
@@ -59,8 +64,14 @@ function CameraCard({
         </Text>
       </View>
       {isSelected && (
-        <Pressable style={styles.ctaButton}>
-          <Text style={styles.ctaText}>Ver con {camera.label} — Entrar ahora</Text>
+        <Pressable
+          style={[styles.ctaButton, isMain && styles.ctaButtonActive]}
+          onPress={onPrimary}
+          disabled={isMain}
+        >
+          <Text style={[styles.ctaText, isMain && styles.ctaButtonActiveText]}>
+            {isMain ? 'Principal' : 'Ver en pantalla principal'}
+          </Text>
         </Pressable>
       )}
     </TouchableOpacity>
@@ -132,6 +143,14 @@ export default function WatchScreen({ route }: any) {
       const next = !prev
       mainPlayerRef.current?.setMuted(next)
       return next
+    })
+  }
+
+  const setAsPrimary = (camera: CameraPosition) => {
+    Vibration.vibrate(10)
+    setSelectedIds((prev) => {
+      if (!prev.includes(camera.id)) return prev
+      return [camera.id, ...prev.filter((id) => id !== camera.id)]
     })
   }
 
@@ -215,7 +234,9 @@ export default function WatchScreen({ route }: any) {
               key={camera.id}
               camera={camera}
               isSelected={selectedIds.includes(camera.id)}
+              isMain={mainCamera?.id === camera.id}
               onToggle={() => toggleCamera(camera)}
+              onPrimary={() => setAsPrimary(camera)}
               coverImage={event.coverImage}
             />
           ))}
@@ -394,6 +415,14 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: 12,
     fontWeight: '700',
+  },
+  ctaButtonActive: {
+    backgroundColor: colors.input,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  ctaButtonActiveText: {
+    color: colors.muted,
   },
   audioSection: {
     paddingHorizontal: spacing.md,
